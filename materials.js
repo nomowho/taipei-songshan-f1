@@ -1,6 +1,17 @@
 /* Original, deterministic materials. No downloaded images or network dependencies. */
 (function(root){
 'use strict';
+function renderPolicy({userAgent='',platform='',maxTouchPoints=0,pixelRatio=1,width=1440,compatible=false}={}){
+ const ios=compatible||/iP(hone|ad|od)/.test(userAgent)||(platform==='MacIntel'&&maxTouchPoints>1);
+ return {ios,shadows:!ios,dpr:Math.min(width<700||ios?1.5:2,pixelRatio),context:{alpha:false,antialias:!ios,preserveDrawingBuffer:ios,powerPreference:'high-performance'}};
+}
+function beginFrame(gl,width,height,color){
+ // Restore the visible target and write masks before clearing the entire frame.
+ gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.disable(gl.SCISSOR_TEST);gl.disable(gl.BLEND);
+ gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.colorMask(true,true,true,true);
+ gl.viewport(0,0,width,height);gl.clearDepth(1);gl.clearColor(...color,1);
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+}
 function atlasData(){
  const size=512,tile=128,data=new Uint8Array(size*size*4);
  function noise(x,y,s){let n=Math.imul(x+17,374761393)^Math.imul(y+71,668265263)^Math.imul(s+1,1274126177);n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295;}
@@ -8,10 +19,10 @@ function atlasData(){
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
   const id=(x/tile|0)+4*(y/tile|0),u=x%tile,v=y%tile,n=noise(u,v,id),coarse=noise(u>>3,v>>3,id);
   let shade=.90+n*.19+(coarse-.5)*.09,c=colors[id];
-  if(id===0){if(u%32<1||v%32<1)shade*=.74;if(n<.035)shade*=.77;}
+  if(id===0){shade=.96+(n-.5)*.06+(coarse-.5)*.035;if(n<.015)shade*=.91;}
   if(id===1){shade=.62+n*.66;if(n>.97)shade*=1.19;}
   if(id===2||id===5){shade=.62+n*.48+coarse*.18;if((u+v*3)%19<2)shade*=.82;}
-  if(id===3){if(u%64<2||v%64<2)shade*=.48;shade*=.95+.05*Math.sin(u*.06);}
+  if(id===3){shade=.98+(n-.5)*.045+.018*Math.sin(u*Math.PI/64)*Math.cos(v*Math.PI/64);if(n<.014)shade*=.93;}
   if(id===4||id===8){shade=.82+n*.08+.13*Math.cos(u*Math.PI/8);if(u%32<2)shade*=.55;}
   if(id===6||id===11){const row=v/16|0;if(v%16<2||(u+(row%2)*16)%32<2)shade*=.66;}
   if(id===7){if(u%32<1||v%32<1)shade*=.67;}
@@ -54,8 +65,18 @@ void main(){
  vec3 N=normalize(vN),V=normalize(uEye-vPos),L=normalize(vec3(-.52,.80,.34));float sun=max(dot(N,L),0.);
  float dist=length(uEye-vPos),detail=1.-smoothstep(800.,3600.,dist);vec2 surface=abs(N.y)>.6?vPos.xz:(abs(N.x)>.6?vPos.zy:vPos.xy);
  vec3 albedo=vC;float rough=.8;vec3 emission=vec3(0.);float material=floor(vType+.1);
- if(material<.5){albedo*=mix(vec3(1.),tex(0.,surface*.085)*1.5,.60);}
- else if(material<1.5||material>9.5){
+ if(material==12.){albedo=mix(vC*.38,vC*.15,uNight);emission=vC*uNight*2.;rough=.22;}
+ else if(material==13.){
+   vec2 pane=fract(vUV*.7);float window=step(.045,pane.x)*(1.-step(.955,pane.x))*step(.055,pane.y)*(1.-step(.945,pane.y));
+   window=mix(.88,window,1.-smoothstep(450.,1500.,dist));
+   float fresnel=pow(1.-max(dot(N,V),0.),3.);
+   vec3 glass=mix(vec3(.20,.38,.48),vec3(.68,.83,.88),fresnel*.65+pane.y*.22);
+   glass+=vec3(.07,.09,.10)*sin(vPos.y*.13+vPos.x*.004);
+   albedo=mix(vec3(.18,.25,.29),glass,window);rough=mix(.40,.13,window);
+   emission=vec3(.58,.77,.88)*window*uNight*.95;
+ }
+ else if(material<.5){albedo*=mix(vec3(1.),tex(0.,surface*.085)*1.5,.60);}
+ else if(material<1.5||material==10.||material==11.){
    bool office=material>9.5&&material<10.5;bool tile=material>10.5;
    albedo*=mix(vec3(1.),tex(tile?6.:0.,surface*(tile?.28:.11))*1.5,.55);
    vec2 uv=vUV,f=fract(uv);float frame=office?.06:.19;
@@ -76,7 +97,7 @@ void main(){
  }
  else if(material<4.5){albedo*=tex(1.,surface*.33)*4.;rough=.96;}
  else if(material<5.5){albedo*=tex(2.,surface*.09)*2.4;rough=1.;}
- else if(material<6.5){albedo*=tex(3.,surface*.022)*1.75;rough=.88;}
+ else if(material<6.5){albedo*=tex(3.,surface*.055)*1.65;rough=.91;}
  else if(material<7.5){albedo*=tex(7.,surface*.055)*1.8;rough=.78;}
  else if(material<8.5){albedo*=tex(4.,surface*.055)*1.55;rough=.33;}
  else{albedo*=tex(5.,surface*.22)*2.;rough=.95;}
@@ -100,5 +121,5 @@ function shadows(gl,size){
  const pos=gl.getAttribLocation(p,'p'),vp=gl.getUniformLocation(p,'vp');
  return {texture:t,ok,size,render(meshes,matrix){if(!ok)return;gl.bindFramebuffer(gl.FRAMEBUFFER,f);gl.viewport(0,0,size,size);gl.clearColor(1,1,1,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(p);for(let i=0;i<gl.getParameter(gl.MAX_VERTEX_ATTRIBS);i++)gl.disableVertexAttribArray(i);gl.enableVertexAttribArray(pos);gl.uniformMatrix4fv(vp,false,matrix);for(const m of meshes){gl.bindBuffer(gl.ARRAY_BUFFER,m.buf);gl.vertexAttribPointer(pos,3,gl.FLOAT,false,48,0);gl.drawArrays(gl.TRIANGLES,0,m.count)}gl.bindFramebuffer(gl.FRAMEBUFFER,null);}};
 }
-const api={atlasData,texture,vertex,fragment,shadows};if(typeof module==='object'&&module.exports)module.exports=api;else root.CircuitMaterials=api;
+const api={atlasData,texture,vertex,fragment,shadows,renderPolicy,beginFrame};if(typeof module==='object'&&module.exports)module.exports=api;else root.CircuitMaterials=api;
 })(typeof window==='object'?window:this);
