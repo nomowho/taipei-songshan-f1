@@ -4,6 +4,8 @@
 
 沿用既有自製 WebGL 場景，無需安裝套件，無外部 JavaScript 或素材請求。保留旋轉、平移、縮放、七個視角、日夜切換、建築／地標切換、自動環繞與同步賽道小地圖。
 
+材質更新：住宅磁磚、玻璃帷幕、屋頂設備、金屬板、瀝青、水泥鋪面、樹冠與動態水面。`materials.js` 在本機產生原創貼圖並處理光照／投影；部署時須與 `index.html` 一起上傳。詳見 `docs/MATERIAL_UPGRADE.md`。
+
 ## 操作
 
 - 本機：`python -m http.server 8000`，開啟 `http://localhost:8000/`。

@@ -1,5 +1,7 @@
 # 公開部署與驗證 — 2026-10-08（台灣時間）
 
+> 以下記錄首次部署。後續建築與材質更新、10 項回歸測試及新版驗證見 [MATERIAL_UPGRADE.md](MATERIAL_UPGRADE.md)。
+
 公開網址：**https://nomowho.github.io/taipei-songshan-f1/**
 
 儲存庫：https://github.com/nomowho/taipei-songshan-f1
