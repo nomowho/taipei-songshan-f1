@@ -53,6 +53,7 @@ function taipeiRoofStrokes(draw){
   const a=line[j-1],b=line[j];draw([-70-i*94-a[0]*52,3-a[1]*34],[-70-i*94-b[0]*52,3-b[1]*34]);
  }
 }
+const VEHICLE_SCALE=3; // Uniform model scale; positions and driving paths stay fixed.
 const parkedCars=Array.from({length:8},(_,i)=>({x:-497+i*54,z:24,color:['#df3344','#e4bd55','#36b8bf','#f0f1e9','#447fd2','#b171cd','#e67e38','#72b68b'][i]}));
 const startingGrid=Array.from({length:20},(_,i)=>({x:-110-Math.floor(i/2)*27-(i%2)*13.5,z:i%2?106:96}));
 
@@ -72,7 +73,7 @@ function fallback2D(C){document.getElementById('rendererStatus').textContent='2D
  // Pit & hospitality
  box(-40,-16,1180,51,28,-5,'#bacbd2');box(70,-16,175,59,26,23,'#6db9c5');for(let x=-620;x<600;x+=57)box(x,11,49,2,10,-5,'#e63143');box(0,-110,900,72,14,-7,'#8b9ca7');
  taipeiRoofStrokes((a,b)=>{strip([a,b],6,25,'#e52e44');strip([a,b],3.2,27,'#f2f2eb')});
- for(const car of parkedCars){box(car.x,car.z,6.4,1.7,1.2,2.3,car.color);box(car.x+2.8,car.z,.5,2.8,.4,2.6,'#1a2530');box(car.x-2.8,car.z,.5,2.8,.4,3.2,car.color);for(const dx of [-1.9,1.9])for(const dz of [-1,1])box(car.x+dx,car.z+dz,1,.55,1,2.4,'#15191e');}
+ for(const car of parkedCars){const S=VEHICLE_SCALE;function carBox(dx,dz,w,d,h,y,color){box(car.x-dz*S,car.z+dx*S,w*S,d*S,h*S,2.3+(y-2.3)*S,color)}carBox(0,0,1.7,6.4,1.2,2.3,car.color);carBox(2.8,0,2.8,.5,.4,2.6,'#1a2530');carBox(-2.8,0,2.8,.5,.4,3.2,car.color);for(const dx of [-1.9,1.9])for(const dz of [-1,1])carBox(dx,dz,.55,1,1,2.4,'#15191e');}
  // Grandstands and roofs
  for(let q of [[110,220,950,72],[-850,-410,310,60],[995,-334,320,62]]){box(q[0],q[1],q[2],q[3],26,-10,'#6e8494');box(q[0],q[1]-6,q[2]+15,q[3]+16,3,24,'#afc2c6')}
  strip(route,57,0,'#737d84');strip(route,37,1,'#404851');strip(route,18,2,'#242c36');
@@ -205,7 +206,7 @@ for(let x=-420;x<15;x+=14){objects.box(x,5,-325,1.2,16,1.2,'#bac9c7',8);}
 // Garage canopies, doors, painted markings and roof ventilation.
 for(let x=-605;x<540;x+=54){objects.box(x,13,11,49,1,5,'#c5c9c3',8);objects.box(x,30,-22,9,2.5,11,'#909e9b',8);}
 // Airport service vehicles parked outside the fictional driving line.
-for(let i=0;i<24;i++){let x=-920+i*67,z=-338;objects.box(x,0,z,3,2.4,6.5,i%4?'#d9dbd3':'#a84335');objects.box(x,2.4,z+.8,2.8,1.1,3.3,'#587883',10);}
+for(let i=0;i<24;i++){let x=-920+i*67,z=-338;const S=VEHICLE_SCALE;objects.box(x,0,z,3*S,2.4*S,6.5*S,i%4?'#d9dbd3':'#a84335');objects.box(x,2.4*S,z+.8*S,2.8*S,1.1*S,3.3*S,'#587883',10);}
 // Cars are rendered separately, updated each frame
 // Continuous metal roof edges with restrained cyan/red night lighting.
 function roofLight(x,z,w,d,y,color='#43d9ea'){
@@ -232,10 +233,10 @@ for(const car of parkedCars){
  carMesh.box(x-2.7,3.5,z,.52,.18,2.65,color);carMesh.box(x-2.7,2.9,z,.22,.60,.30,'#536874',8);
  for(const dx of [-1.82,1.82])for(const dz of [-1.08,1.08])parkedWheel(carMesh,x+dx,2.78,z+dz);
  // Rotate each car out of its garage, with the nose toward the pit through lane.
- for(let i=0;i<carMesh.arr.length;i+=12){const a=carMesh.arr;objects.arr.push(car.x-a[i+2],a[i+1],car.z+a[i],-a[i+5],a[i+4],a[i+3],...a.slice(i+6,i+12));}
+ for(let i=0;i<carMesh.arr.length;i+=12){const a=carMesh.arr;objects.arr.push(car.x-a[i+2]*VEHICLE_SCALE,2.22+(a[i+1]-2.22)*VEHICLE_SCALE,car.z+a[i]*VEHICLE_SCALE,-a[i+5],a[i+4],a[i+3],...a.slice(i+6,i+12));}
  // Three-sided service box and a center stop line for every parked car.
- for(const dx of [-3.2,3.2])base.flatrect(car.x+dx,car.z,.20,10,2.24,'#d9cba3');
- base.flatrect(car.x,car.z+5,6.6,.20,2.24,'#d9cba3');
+ for(const dx of [-3.2,3.2])base.flatrect(car.x+dx*VEHICLE_SCALE,car.z,.20,10*VEHICLE_SCALE,2.24,'#d9cba3');
+ base.flatrect(car.x,car.z+5*VEHICLE_SCALE,6.6*VEHICLE_SCALE,.20,2.24,'#d9cba3');
 }
 // Dimensional white sign faces with red edging, on the pit building's west roof.
 // Low dark mounting rails bridge the existing stepped roofs and clear their vents.
@@ -264,7 +265,7 @@ function applyPreset(name){let presets={overview:{az:2.58,el:1.01,dist:3650,tx:0
 document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{autospin=false;document.getElementById('auto').classList.remove('on');applyPreset(b.dataset.preset)});
 function updateButton(id,state){document.getElementById(id).classList.toggle('on',state);document.getElementById(id).setAttribute('aria-pressed',String(state))}document.getElementById('night').onclick=()=>{night=!night;updateButton('night',night);document.getElementById('night').textContent=night?'◐ 夜景':'☀ 日景'};document.getElementById('buildings').onclick=()=>{buildingsOn=!buildingsOn;updateButton('buildings',buildingsOn)};document.getElementById('labels').onclick=()=>{labelsOn=!labelsOn;updateButton('labels',labelsOn)};document.getElementById('auto').onclick=()=>{autospin=!autospin;updateButton('auto',autospin)};document.getElementById('zoomIn').onclick=()=>goal.dist=clamp(goal.dist*.76,190,9000);document.getElementById('zoomOut').onclick=()=>goal.dist=clamp(goal.dist*1.3,190,9000);
 const pointers=new Map();let lastPair=null;let moved=false;C.addEventListener('contextmenu',e=>e.preventDefault());C.addEventListener('pointerdown',e=>{C.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,prevX:e.clientX,prevY:e.clientY,button:e.button});lastPair=null;moved=false});C.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;for(const point of pointers.values()){point.prevX=point.x;point.prevY=point.y}let p=pointers.get(e.pointerId);p.prevX=p.x;p.prevY=p.y;p.x=e.clientX;p.y=e.clientY;let dx=p.x-p.prevX,dy=p.y-p.prevY;moved=moved||Math.hypot(dx,dy)>2;autospin=false;updateButton('auto',false);if(pointers.size===1){if(p.button===2||e.shiftKey){pan(dx,dy)}else{goal.az+=dx*.006;goal.el=clamp(goal.el+dy*.005,.16,1.565)}}else if(pointers.size===2){let arr=[...pointers.values()],A=arr[0],B=arr[1],now={cx:(A.x+B.x)/2,cy:(A.y+B.y)/2,dist:Math.hypot(A.x-B.x,A.y-B.y)},prev={cx:(A.prevX+B.prevX)/2,cy:(A.prevY+B.prevY)/2,dist:Math.hypot(A.prevX-B.prevX,A.prevY-B.prevY)};pan(now.cx-prev.cx,now.cy-prev.cy);if(prev.dist>1){goal.dist=clamp(goal.dist*prev.dist/Math.max(now.dist,2),190,9000)}}});for(let ev of ['pointerup','pointercancel','lostpointercapture'])C.addEventListener(ev,e=>{pointers.delete(e.pointerId);lastPair=null});function pan(dx,dy){let s=goal.dist/(Math.min(cw,ch)*1.6);goal.tx+=cos(goal.az)*dx*s;goal.tz-=sin(goal.az)*dx*s;goal.tx-=sin(goal.az)*dy*s*1.0;goal.tz-=cos(goal.az)*dy*s*1.0;goal.tx=clamp(goal.tx,-4000,4000);goal.tz=clamp(goal.tz,-5300,2100)}C.addEventListener('wheel',e=>{e.preventDefault();goal.dist=clamp(goal.dist*Math.exp(e.deltaY*.0011),190,9000)},{passive:false});window.addEventListener('keydown',e=>{if(e.key==='+')goal.dist=clamp(goal.dist*.82,190,9000);if(e.key==='-')goal.dist=clamp(goal.dist*1.2,190,9000);if(e.key==='ArrowLeft')goal.az-=.14;if(e.key==='ArrowRight')goal.az+=.14;if(e.key==='ArrowUp')goal.el=clamp(goal.el-.12,.16,1.565);if(e.key==='ArrowDown')goal.el=clamp(goal.el+.12,.16,1.565);if(e.key==='0')applyPreset('overview')});
-function carGeom(mesh,x,z,theta,col){let D=[cos(theta),sin(theta)],N=[-sin(theta),cos(theta)];function part(cx,cz,w,d,h,y,color){let v=(lx,lz)=>[cx+N[0]*lx+D[0]*lz,cz+N[1]*lx+D[1]*lz];let A=v(-w/2,-d/2),B=v(w/2,-d/2),CC=v(w/2,d/2),E=v(-w/2,d/2);mesh.quad([A[0],y,A[1]],[B[0],y,B[1]],[CC[0],y,CC[1]],[E[0],y,E[1]],color,2);mesh.quad([A[0],y-h,A[1]],[B[0],y-h,B[1]],[B[0],y,B[1]],[A[0],y,A[1]],color);mesh.quad([E[0],y-h,E[1]],[CC[0],y-h,CC[1]],[CC[0],y,CC[1]],[E[0],y,E[1]],color)}part(x,z,2.6,5,1.5,4.2,col);part(x+D[0]*2.2,z+D[1]*2.2,3.6,.55,.3,3.5,'#1c2028');part(x-D[0]*2.0,z-D[1]*2.0,3.2,.55,.3,4.2,'#15191f');part(x,z,1.2,1.7,.8,5.0,'#0d1a26')}
+function carGeom(mesh,x,z,theta,col){let D=[cos(theta),sin(theta)],N=[-sin(theta),cos(theta)];function part(cx,cz,w,d,h,y,color){const S=VEHICLE_SCALE;cx=x+(cx-x)*S;cz=z+(cz-z)*S;w*=S;d*=S;h*=S;y=2.7+(y-2.7)*S;let v=(lx,lz)=>[cx+N[0]*lx+D[0]*lz,cz+N[1]*lx+D[1]*lz];let A=v(-w/2,-d/2),B=v(w/2,-d/2),CC=v(w/2,d/2),E=v(-w/2,d/2);mesh.quad([A[0],y,A[1]],[B[0],y,B[1]],[CC[0],y,CC[1]],[E[0],y,E[1]],color,2);mesh.quad([A[0],y-h,A[1]],[B[0],y-h,B[1]],[B[0],y,B[1]],[A[0],y,A[1]],color);mesh.quad([E[0],y-h,E[1]],[CC[0],y-h,CC[1]],[CC[0],y,CC[1]],[E[0],y,E[1]],color)}part(x,z,2.6,5,1.5,4.2,col);part(x+D[0]*2.2,z+D[1]*2.2,3.6,.55,.3,3.5,'#1c2028');part(x-D[0]*2.0,z-D[1]*2.0,3.2,.55,.3,4.2,'#15191f');part(x,z,1.2,1.7,.8,5.0,'#0d1a26')}
 let carBuffer=gl.createBuffer(),carCount=0,lastCarT=0;function cars(t){let m=createMesh();let c=['#f44353','#42baca','#f4dd83','#f7f8fa','#a73feb','#55de8f','#ff992e','#3664e8','#e72c40','#cbd6e3'];for(let i=0;i<10;i++){let u=(t*.000011+(i/10))%1,[x,z,a]=locate(u);carGeom(m,x,z,a,c[i])}let f=new Float32Array(m.arr);gl.bindBuffer(gl.ARRAY_BUFFER,carBuffer);gl.bufferData(gl.ARRAY_BUFFER,f,gl.DYNAMIC_DRAW);carCount=f.length/12;return {buf:carBuffer,count:carCount}}
 // Inset track map
 const MC=document.getElementById('map'),ctx=MC.getContext('2d');function drawMap(){let rect=MC.getBoundingClientRect(),w=Math.max(10,rect.width),h=Math.max(10,rect.height),r=window.devicePixelRatio||1;if(MC.width!==Math.round(w*r)||MC.height!==Math.round(h*r)){MC.width=Math.round(w*r);MC.height=Math.round(h*r)}ctx.setTransform(r,0,0,r,0,0);ctx.clearRect(0,0,w,h);ctx.strokeStyle='rgba(120,157,177,.17)';ctx.lineWidth=.5;for(let i=0;i<11;i++){let xx=(i+.5)*w/11;ctx.beginPath();ctx.moveTo(xx,0);ctx.lineTo(xx,h);ctx.stroke()}for(let i=0;i<7;i++){let yy=i*h/7;ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(w,yy);ctx.stroke()}
