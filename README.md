@@ -16,7 +16,9 @@
 
 專用儲存庫：`nomowho/taipei-songshan-f1`。GitHub Pages 使用 `main` 分支根目錄，`.nojekyll` 關閉 Jekyll。
 
-部署狀態與實際驗證見 `docs/RELEASE_QA.md`（發布驗證後更新）。未出現驗證紀錄前，不應把預期網址視為已上線。
+公開網站：[開啟 TAIPEI GRAND PRIX](https://nomowho.github.io/taipei-songshan-f1/)
+
+2026-10-08 已驗證 Pages 建置成功、匿名 HTTP 200 與瀏覽器 3D 載入。測試範圍與限制見 `docs/RELEASE_QA.md`。
 
 ## 測試與限制
 

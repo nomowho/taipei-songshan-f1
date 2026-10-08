@@ -1,3 +1,5 @@
+> 本文件記錄原始交接狀態。2026-10-08 接手修正及已完成部署的狀態請以 [RELEASE_QA.md](RELEASE_QA.md) 與 [IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md) 為準。
+
 # Current code and handoff reality
 
 ## Available source
