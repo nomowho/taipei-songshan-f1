@@ -8,6 +8,8 @@
 
 最新調整：手機小地圖上移、iPhone 相容繪圖路徑、無格線清水模、金屬及玻璃帷幕車庫、夜間屋緣燈條、8 台停放賽車與 20 個交錯起跑格。檢查紀錄及真機驗證限制見 `docs/MOBILE_AND_PIT_UPDATE.md`。
 
+最新地圖版：以 OpenStreetMap 實際道路與建物輪廓取代方格街廓，高度優先採用已知高度／樓層；屋頂改為無線條金屬反光，新增品牌文字看板及旗幟。必須一併部署 `city.js` 與 `data/taipei-map.js`；來源、ODbL 授權及估算範圍見 [MAP_SOURCES.md](docs/MAP_SOURCES.md)。
+
 ## 操作
 
 - 本機：`python -m http.server 8000`，開啟 `http://localhost:8000/`。

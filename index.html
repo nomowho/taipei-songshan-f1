@@ -27,15 +27,18 @@ button:focus-visible,#view:focus-visible{outline:2px solid #58dce8;outline-offse
  .right{left:auto;right:12px;bottom:70px;display:grid;grid-template-columns:repeat(2,auto);gap:4px}.right .mode-btn{padding:5px;min-height:44px}.right .legend{display:none}
  .bar{display:flex;bottom:calc(7px + env(safe-area-inset-bottom));overflow-x:auto;gap:4px}.bar button{font-size:10px;padding:7px}.bottomnote{display:none}#rendererStatus{top:137px;left:14px}
 }
+.map-credit{font-size:8px;line-height:1.5;color:#b6c7cd;margin-top:6px;max-width:300px}.map-credit a{color:#c2d5de}@media(max-width:700px){.map-credit{font-size:7px;max-width:190px}}
 </style></head><body>
 <canvas id="view" tabindex="0" aria-label="互動賽道：拖曳旋轉、雙指平移縮放；方向鍵旋轉、加減號縮放、0 重設"></canvas><div class="vignette"></div>
-<div class="top"><div class="title"><div class="brand">FORMULA CONCEPT / 3D EXPERIENCE</div><h1>TAIPEI<br>GRAND PRIX<span style="color:#ff283b">.</span></h1><div class="sub">SONGSHAN AIRPORT / INTERACTIVE CIRCUIT</div><div class="concept">非官方概念設計 / UNOFFICIAL CONCEPT</div></div><div class="mini"><div class="h">TRACK SCHEMATIC <span id="mapMode">LIVE 3D</span></div><canvas id="map"></canvas><div class="facts"><div class="f"><div class="k">概念賽道長度</div><div class="n" id="len">— KM</div></div><div class="f"><div class="k">跑道基準長度</div><div class="n">2.605 KM</div></div></div></div></div>
+<div class="top"><div class="title"><div class="brand">FORMULA CONCEPT / 3D EXPERIENCE</div><h1>TAIPEI<br>GRAND PRIX<span style="color:#ff283b">.</span></h1><div class="sub">SONGSHAN AIRPORT / INTERACTIVE CIRCUIT</div><div class="concept">非官方概念設計 / UNOFFICIAL CONCEPT</div><div class="map-credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> · <a href="./docs/MAP_SOURCES.md" target="_blank">圖資說明</a><br>建物缺失高度採估算 · 品牌為視覺示意，非本賽事贊助</div></div><div class="mini"><div class="h">TRACK SCHEMATIC <span id="mapMode">LIVE 3D</span></div><canvas id="map"></canvas><div class="facts"><div class="f"><div class="k">概念賽道長度</div><div class="n" id="len">— KM</div></div><div class="f"><div class="k">跑道基準長度</div><div class="n">2.605 KM</div></div></div></div></div>
 <div class="compass"><span>N</span><div class="diamond" id="compass"></div></div>
-<div class="tags" id="tags"><div class="tag r" data-x="-90" data-y="60" data-z="100"><b>START / FINISH</b><i></i></div><div class="tag" data-x="-390" data-y="42" data-z="-360"><b>SONGSHAN TERMINAL</b><i></i></div><div class="tag r" data-x="0" data-y="57" data-z="-5"><b>F1 PADDOCK</b><i></i></div><div class="tag" data-x="0" data-y="7" data-z="550"><b>KEELUNG RIVER 基隆河</b><i></i></div><div class="tag" data-x="1250" data-y="540" data-z="-3650"><b>TAIPEI 101</b><i></i></div></div>
+<div class="tags" id="tags"><div class="tag r" data-x="-90" data-y="60" data-z="100"><b>START / FINISH</b><i></i></div><div class="tag" data-x="-390" data-y="42" data-z="-360"><b>SONGSHAN TERMINAL</b><i></i></div><div class="tag r" data-x="0" data-y="57" data-z="-5"><b>F1 PADDOCK</b><i></i></div><div class="tag" data-x="0" data-y="7" data-z="550"><b>KEELUNG RIVER 基隆河</b><i></i></div><div class="tag" data-x="1206" data-y="540" data-z="-3867"><b>TAIPEI 101</b><i></i></div></div>
 <div class="left"><div class="data"><div class="eyebrow" id="eyebrow">01 / MASTERPLAN</div><div class="big" id="focusName">松山機場 · 賽道全覽</div><p id="focusDesc">用滑鼠拖曳或單指滑動旋轉；滾輪／雙指縮放。右鍵拖曳或雙指平移。</p></div></div>
 <div class="right"><button class="mode-btn on" id="night">◐ 夜景</button><button class="mode-btn on" id="buildings">▥ 建築</button><button class="mode-btn on" id="labels">⌁ 地標</button><button class="mode-btn" id="auto">↻ 環繞</button><div style="display:flex;gap:6px"><button class="mode-btn" id="zoomIn" aria-label="放大">＋</button><button class="mode-btn" id="zoomOut" aria-label="縮小">－</button></div><div class="legend">滑鼠左鍵／單指：旋轉<br>右鍵／雙指移動：平移 · 滾輪／雙指開合：縮放</div></div>
-<div class="bar" id="bar"><button data-preset="overview" class="active">◈ 全區俯瞰</button><button data-preset="pits">▰ 維修區</button><button data-preset="west">↶ 西側彎道</button><button data-preset="east">↷ 東側彎道</button></div><div class="bottomnote">賽道改建、街廓與橋梁為示意 · 非實測／非 FIA 認證</div><div id="rendererStatus" role="status"></div><div id="error" role="alert"><p id="errorText">無法啟動繪圖功能，請使用 Chrome、Edge 或 Safari。</p><button id="retry" class="mode-btn">重新載入</button></div>
-<script src="./materials.js?v=20261008-polish"></script>
+<div class="bar" id="bar"><button data-preset="overview" class="active">◈ 全區俯瞰</button><button data-preset="pits">▰ 維修區</button><button data-preset="west">↶ 西側彎道</button><button data-preset="east">↷ 東側彎道</button></div><div class="bottomnote">概念賽道改建 · 非 FIA 認證 · 品牌展示非贊助關係</div><div id="rendererStatus" role="status"></div><div id="error" role="alert"><p id="errorText">無法啟動繪圖功能，請使用 Chrome、Edge 或 Safari。</p><button id="retry" class="mode-btn">重新載入</button></div>
+<script src="./data/taipei-map.js?v=20261009"></script>
+<script src="./city.js?v=20261009"></script>
+<script src="./materials.js?v=20261009-metal"></script>
 <script>
 (()=>{'use strict';
 document.getElementById('retry').onclick=()=>location.reload();
@@ -63,11 +66,9 @@ function fallback2D(C){document.getElementById('rendererStatus').textContent='2D
  function poly(points,color,category='object'){(category==='city'?cityShapes:shapes).push({p:points,c:color})}function rect(x,z,w,d,y,c){poly([[x-w/2,y,z-d/2],[x+w/2,y,z-d/2],[x+w/2,y,z+d/2],[x-w/2,y,z+d/2]],c)}function box(x,z,w,d,h,y,color,category='object'){let xa=x-w/2,xb=x+w/2,za=z-d/2,zb=z+d/2;let p=(x,y,z)=>[x,y,z];let t=y+h;let faces=[[[p(xa,y,za),p(xb,y,za),p(xb,t,za),p(xa,t,za)],'#425060'],[[p(xb,y,zb),p(xa,y,zb),p(xa,t,zb),p(xb,t,zb)],'#516170'],[[p(xb,y,za),p(xb,y,zb),p(xb,t,zb),p(xb,t,za)],'#677580'],[[p(xa,y,zb),p(xa,y,za),p(xa,t,za),p(xa,t,zb)],'#465564'],[[p(xa,t,za),p(xb,t,za),p(xb,t,zb),p(xa,t,zb)],color]];for(let f of faces)poly(f[0],f[1],category)}
  function strip(P,w,y,col){for(let i=0;i<P.length;i++){let q=P[i],r=P[(i+1)%P.length],dx=r[0]-q[0],dz=r[1]-q[1],l=Math.hypot(dx,dz)||1,nx=-dz/l*w*.5,nz=dx/l*w*.5;poly([[q[0]-nx,y,q[1]-nz],[q[0]+nx,y,q[1]+nz],[r[0]+nx,y,r[1]+nz],[r[0]-nx,y,r[1]-nz]],col)}}
  rect(0,-900,9600,10300,-22,'#26333d');rect(0,-60,2910,850,-13,'#455d4d');rect(0,101,2610,60,-8,'#575f66');rect(-440,-290,1250,230,-7,'#798287');rect(780,-290,780,230,-7,'#616c70');
- let riv=[];for(let x=-4200;x<=4200;x+=80)riv.push([x,575+75*sin(x/660)+22*sin(x/200)]);for(let i=0;i<riv.length-1;i++){let p=riv[i],q=riv[i+1];poly([[p[0],-12,p[1]-100],[q[0],-12,q[1]-100],[q[0],-12,q[1]+100],[p[0],-12,p[1]+100]],'#23465f')}
- for(let xx of [-1200,-450,480,1520]){box(xx,570,24,350,9,-6,'#99adb9')}
- for(let x=-3200;x<=3200;x+=144)for(let z=-4500;z<=1820;z+=145){if(Math.abs(x)<1550&&z>-565&&z<360)continue;if(Math.abs(z-(575+75*sin(x/660)+22*sin(x/200)))<205)continue;if(rnd()<.13)continue;if(x>1100&&x<1390&&z<-3450&&z>-3880)continue;let w=48+rnd()*55,d=48+rnd()*60,h=18+Math.pow(rnd(),2)*(z<-2450&&x>400?270:85);box(x+rnd()*18-9,z+rnd()*18-9,w,d,h,-18,'#8998a3','city')}
+ CircuitCity.fallback(TaipeiMapData,poly,strip);
  // Taipei 101 in geographic southeast side of Songshan airfield
- box(1250,-3650,99,99,80,-10,'#4c8996','city');for(let i=0;i<8;i++)box(1250,-3650,80-i*4,80-i*4,53,70+i*53,'#75bbc5','city');box(1250,-3650,12,12,65,490,'#c7e3e8','city');
+ box(1206,-3867,99,99,80,-10,'#4c8996','city');for(let i=0;i<8;i++)box(1206,-3867,80-i*4,80-i*4,53,70+i*53,'#75bbc5','city');box(1206,-3867,12,12,65,490,'#c7e3e8','city');
  // Terminal & towers
  box(-450,-375,800,80,35,-7,'#c6cdd1');box(-200,-345,440,40,20,-7,'#7ab0b5');for(let i=0;i<9;i++)box(-790+i*88,-321,8,48,7,-5,'#ccd4d8');box(-880,-371,28,28,70,-8,'#ccd9db');box(-880,-371,56,56,12,59,'#81bac5');
  // Pit & hospitality
@@ -118,43 +119,10 @@ for(let i=0;i<13;i++){let x=-1140+i*180;base.flatrect(x,120,36,2,.15,'#c2cbd0')}
 for(let x of [-1200,1200]){for(let i=0;i<8;i++)base.flatrect(x+(x<0?i*6:-i*6),100,2.4,35,.2,'#adb9c1')}
 // Apron and taxiways
 base.flatrect(-440,-292,1220,255,-3,'#b1b3aa',6);base.flatrect(860,-295,800,196,-4,'#9d9f95',6);base.path([[-1200,-20],[-1200,-108],[-1100,-166],[-965,-200]],20,-1,'#5f6463',4);base.path([[1080,-13],[1060,-225],[950,-312]],24,-1,'#5f6463',4);
-// Keelung river on northern side, shoreline park and bridges
-const river=[];for(let x=-4100;x<=4100;x+=40){river.push([x,575+76*sin(x/650)+22*sin(x/210)])}base.path(river,230,-7,'#233e53',3);base.path(river,270,-8,'#698359',5);for(let k=0;k<80;k++){let i=2+Math.floor(rnd()*(river.length-4)),p=river[i];base.flatrect(p[0],p[1]+(rnd()>.5?142:-142),8+12*rnd(),13+23*rnd(),-5,'#779164',5)}
-for(let x of [-1250,-480,490,1540]){let z=575+76*sin(x/650)+22*sin(x/210);objects.box(x,4,z,25,5,360,'#60717b');objects.box(x-13,5,z,2,3,360,'#8dabb9');objects.box(x+13,5,z,2,3,360,'#8dabb9');for(let j=-140;j<=140;j+=27){objects.box(x-13,9,z+j,1.6,3,2,'#b5cad5');objects.box(x+13,9,z+j,1.6,3,2,'#b5cad5')}}
-// Realistic city grid surrounding the airport; downtown landmark lies to the southeast (x+, z-)
-const palette=['#b4b2a6','#b6b7ae','#a4ada9','#c0b5a2','#b5afa6','#a2aba9','#acaaa0','#9ba8a8'];
-function cityBlock(x,z){
- if(Math.abs(x)<1490&&z>-520&&z<350)return;
- if(Math.abs(z-(575+76*sin(x/650)+22*sin(x/210)))<185)return;
- if(Math.abs(x-1250)<120&&Math.abs(z+3650)<150)return;
- if([-480,-650,-1150,-1850,-2650,-3600].some(a=>Math.abs(z-a)<43)||[-2680,-1740,-1480,1640,2330].some(a=>Math.abs(x-a)<42))return;
- let downtown=x>730&&x<2150&&z<-2500&&z>-4650,office=downtown&&rnd()>.34;
- let w=office?48+rnd()*30:64+rnd()*26,d=office?45+rnd()*32:63+rnd()*29,h=office?70+Math.pow(rnd(),1.5)*220:14+Math.floor(rnd()*12)*3.4;
- let bx=x+rnd()*7-3,bz=z+rnd()*7-3,col=office?'#607e8c':palette[Math.floor(rnd()*palette.length)];
- city.flatrect(bx,bz,w+10,d+10,-6,'#90978b',6);
- city.box(bx,-4,bz,w,h,d,col,office?10:11);
- city.box(bx,-3.5,bz,w+5,2,d+5,'#aeb0a5',6);
- const top=h-4;
- if(office){city.box(bx,top,bz,w*.65,7,d*.70,'#849595',8);city.box(bx,top+7,bz,w*.70,1.2,d*.74,'#bac5bd',8);}
- else if(Math.abs(x)<2400&&z>-3200){
-  // Parapet and stair enclosure, roof water tank, condensers.
-  city.box(bx,top,bz-d/2+.6,w,1.3,1.2,'#cecdc1');city.box(bx,top,bz+d/2-.6,w,1.3,1.2,'#cecdc1');
-  city.box(bx-w/2+.6,top,bz,1.2,1.3,d,'#cecdc1');city.box(bx+w/2-.6,top,bz,1.2,1.3,d,'#cecdc1');
-  city.box(bx-w*.22,top,bz-d*.20,9,4.5,10,'#b8b6a6');
-  city.cylinder(bx+w*.23,bz+d*.22,2.6,4.5,top+.8,'#aab5b7',8);
-  for(let j=0;j<2;j++)city.box(bx+7+j*6,top+.3,bz-d*.24,4,2.5,3,'#a1aba6',8);
-  if(rnd()>.64)city.box(bx+w*.17,top+1,bz+d*.08,w*.42,1,d*.35,'#376478',10);
- }
- // Cornice and shaded ground-floor arcade create different building silhouettes.
- if(!office&&h>30){city.box(bx,3,bz+d*.50,w+3,1.2,5,'#87928d',8);city.box(bx,top-3,bz,w+1.6,.9,d+1.6,'#d0cabb');}
-}
-for(let x=-3500;x<=3500;x+=104){for(let z=-4700;z<=2050;z+=110){if(Math.abs(x)>1850||z<-530||z>850){if(rnd()>.11)cityBlock(x,z)}}}
-// Wide street corridors and elevated avenue near terminal
-for(let z of [-480,-650,-1150,-1850,-2650,-3600]){base.flatrect(0,z,7400,17,-3,'#474a4c',4);base.flatrect(0,z,7400,2,-2,'#6c7577')}
-for(let x of [-2680,-1740,-1480,1640,2330]){base.flatrect(x,-1200,18,6200,-3,'#474a4c',4)}
-objects.box(0,-2,-465,2970,1,21,'#aab4b3');objects.box(0,0,-465,2970,1,4,'#e1b85b');
+// Real OSM road network, river and building footprints replace the former generated grid.
+CircuitCity.build(TaipeiMapData,base,city);
 // Taipei 101 - in southeastern district, not north of the airport
-const tX=1250,tZ=-3650;function makeTaipei101(){let colors=['#346d79','#448895','#32707e'];city.box(tX,0,tZ,94,78,94,'#417987',10);for(let i=0;i<8;i++){let y=78+i*52,r=77-(i%2)*6-i*2.7;city.box(tX,y,tZ,r,48,r,colors[i%3],10);city.box(tX,y+43,tZ,r+4,6,r+4,'#76abb4')};city.box(tX,493,tZ,25,17,25,'#76bcc4');city.box(tX,508,tZ,5,38,5,'#c7e1e3');city.box(tX,540,tZ,2,18,2,'#ef565c');for(let i=0;i<4;i++)city.box(tX+(i%2?78:-78),0,tZ+(i<2?75:-75),43,142+i*32,43,'#677d91',true)}makeTaipei101();
+const tX=1206,tZ=-3867;function makeTaipei101(){let colors=['#346d79','#448895','#32707e'];city.box(tX,0,tZ,94,78,94,'#417987',10);for(let i=0;i<8;i++){let y=78+i*52,r=77-(i%2)*6-i*2.7;city.box(tX,y,tZ,r,48,r,colors[i%3],10);city.box(tX,y+43,tZ,r+4,6,r+4,'#76abb4')};city.box(tX,493,tZ,25,17,25,'#76bcc4');city.box(tX,508,tZ,5,38,5,'#c7e1e3');city.box(tX,540,tZ,2,18,2,'#ef565c');for(let i=0;i<4;i++)city.box(tX+(i%2?78:-78),0,tZ+(i<2?75:-75),43,142+i*32,43,'#677d91',true)}makeTaipei101();
 // Airport architecture, existing terminal massing reimagined
 objects.box(-445,-2,-375,790,31,69,'#9ba9b3',8);objects.box(-445,29,-375,800,6,87,'#aeb9c0',8);objects.box(-210,3,-345,480,18,37,'#567a86',10);objects.box(-880,0,-357,120,32,55,'#9aa8b6',true);objects.box(-120,2,-400,176,28,74,'#7f9dab',10);objects.box(-710,1,-410,210,20,60,'#788a99',true);objects.box(970,-1,-377,250,19,75,'#8c9da8',true);objects.box(1070,19,-371,185,6,80,'#adbac2');
 for(let x=-795;x<=-140;x+=88){objects.box(x,0,-320,8,6,52,'#adbcc6');objects.box(x,3,-300,44,2,15,'#ced8df')}
@@ -164,7 +132,7 @@ objects.cylinder(-880,-371,15,50,2,'#d6dfe1',12);objects.cylinder(-880,-371,28,9
 objects.box(-60,12,-14,1190,14,43,'#899ca6',8);objects.box(-60,0,-23,1190,12,24,'#314852',8);
 objects.box(-60,12.5,7.8,1184,12.8,.55,'#8eb6c8',13);objects.box(-60,12.5,-35.8,1184,12.8,.55,'#8eb6c8',13);
 objects.box(-60,26,-14,1220,3,48,'#a8bbc4',8);objects.box(-60,29,-14,790,7,42,'#507680',8);
-for(let i=0;i<21;i++){let x=-605+i*54;objects.box(x,0,-8.5,48,10,1,'#182933',8);base.flatrect(x,1,48,20,2.2,'#8b9597',6);objects.box(x-25,0,7.5,3.5,12,7,'#6d8795',8);objects.box(x,10,9,50,2,3,'#8aabbc',8);objects.box(x,9.6,6,43,.5,.75,'#b6eaf1',12);objects.box(x,32,-14,2,3,48,'#88a7b2')}
+for(let i=0;i<21;i++){let x=-605+i*54;objects.box(x,0,-8.5,48,10,1,'#182933',8);base.flatrect(x,1,48,20,2.2,'#8b9597',6);objects.box(x-25,0,7.5,3.5,12,7,'#6d8795',8);objects.box(x,10,9,50,2,3,'#8aabbc',8);objects.box(x,9.6,6,43,.5,.75,'#b6eaf1',12)}
 objects.box(70,28,0,150,22,46,'#91b7c9',13);objects.box(70,49,0,170,3,55,'#b7cdd6',8);
 for(let x of [-310,250]){objects.box(x,3,99,6,22,80,'#6f8e99');objects.box(x,23,99,23,6,140,'#495761');objects.box(x,24,99,22,2,125,'#ea2d3c',false)}
 // Extra safety fences, paddock structures, spectator grandstands
@@ -172,8 +140,19 @@ for(let x=-850;x<800;x+=150){objects.box(x,1,-91,100,6,35,'#7e8c92',8);objects.b
 function grandstand(x,z,w,d,h,clr){objects.box(x,-1,z,w,Math.max(4,h*.45),d,'#4c5867');for(let i=0;i<5;i++){let u=i/5;objects.box(x,-1+h*.38+i*3,z+d*.32-i*d*.12,w,1.0,d*.70-i*d*.075,i%2===0?'#8e9caa':'#b7c4c7')}objects.box(x,h+10,z-7,w+10,3,d+13,clr,8);for(let a=-w/2+16;a<w/2;a+=55){objects.box(x+a,0,z+d/2-2,2,h+12,2,'#bccbd2')}}
 grandstand(110,216,970,58,17,'#859bab');grandstand(-860,-410,310,50,17,'#778b9b');grandstand(1015,-334,310,64,17,'#7d94a2');grandstand(-20,-433,560,41,13,'#788e9b');
 for(let i=0;i<8;i++){let x=-500+i*135;objects.box(x,-1,-130,72,14,28,'#8fa4ae',8);objects.box(x,13,-130,80,2,32,'#a8b5bd',8)}
-// Large tech billboards, night screens, event lighting
-for(let [x,z] of [[-970,250],[950,235],[730,-337],[-1070,-365],[330,290]]){objects.box(x,0,z,5,34,5,'#6b8b97');emissive.box(x,33,z,68,27,2,'#1d8da8');emissive.box(x,50,z,75,2,4,'#e52b3f')}
+// Brand names are concept scenery, not sponsorship of this fictional event.
+function brandPanel(x,y,z,w,h,brand,flag=false){
+ const lo=brand/4+.008,hi=(brand+1)/4-.008,type=flag?15:14,steps=flag?10:1;
+ for(let i=0;i<steps;i++){const a=i/steps,b=(i+1)/steps,xa=x-w/2+w*a,xb=x-w/2+w*b;
+ objects.quad([xa,y,z],[xb,y,z],[xb,y+h,z],[xa,y+h,z],'#ffffff',type,[[1-a,lo],[1-b,lo],[1-b,hi],[1-a,hi]]);
+ objects.quad([xb,y,z-.3],[xa,y,z-.3],[xa,y+h,z-.3],[xb,y+h,z-.3],'#ffffff',type,[[b,lo],[a,lo],[a,hi],[b,hi]]);
+ }
+}
+for(const [i,x,z] of [[0,-970,250],[1,950,235],[2,730,-337],[3,-1070,-365],[4,330,290]]){
+ objects.box(x,0,z,3,27,3,'#7d939e',8);objects.box(x,27,z,111,27,2,'#344a56',8);brandPanel(x,28,z+1.1,108,24,i%3);
+}
+for(let i=0;i<12;i++){const x=-720+i*120;brandPanel(x,3,133,100,9,i%3);}
+for(let i=0;i<15;i++){const x=-700+i*95,z=300;objects.cylinder(x,z,.6,37,0,'#b3c4ca',8);brandPanel(x+10,14,z,19,23,i%3,true);}
 // Track: runway straight, technical loops, curb strips, glowing LEDs
 base.path(track,59,1.2,'#888d84',6,true);base.path(track,43,1.35,'#565956',4,true);base.path(track,19,1.65,'#343738',4,true);
 function shiftedLine(offset,y,width,fill,kind=0){let a=[];for(let i=0;i<track.length;i++){let prev=track[(i-1+track.length)%track.length],next=track[(i+1)%track.length],dx=next[0]-prev[0],dz=next[1]-prev[1],mag=Math.hypot(dx,dz)||1;a.push([track[i][0]-dz/mag*offset,track[i][1]+dx/mag*offset])}base.path(a,width,y,fill,kind,true)}
@@ -196,11 +175,9 @@ for(let x=-696;x<650;x+=3.5)objects.box(x,2,63,.12,3.3,.12,'#738e99',8);
 // Apron parking service lights, tire walls & planted trees
 for(let x=-1250;x<=1250;x+=89){for(let z of [-460,343]){let h=16+rnd()*4;objects.box(x,-1,z,1,h,1,'#a4b6c0');emissive.box(x,h,z,3,1,3,'#a6dce4')}}
 function tree(x,z,h){objects.cylinder(x,z,1.2,h*.58,-6,'#70634e',7);objects.crown(x,h*.60-6,z,h*.36,h*.48,h*.37,'#4e7050');objects.crown(x+h*.20,h*.53-6,z-h*.13,h*.28,h*.35,h*.29,'#668358');}
-for(let i=0;i<480;i++){let x=(rnd()-.5)*6800,z=(rnd()-.5)*7400-700;if(Math.abs(x)<1400&&z>-450&&z<350)continue;if(Math.abs(z-(575+76*sin(x/650)+22*sin(x/210)))<145)continue;tree(x,z,13+rnd()*12)}
-// Landscaped river banks with planted rows, pavement and realistic light poles.
-for(let x=-1500;x<=1500;x+=58){let z=575+76*sin(x/650)+22*sin(x/210);tree(x,z-161,14+rnd()*6)}
+// Landscaping uses mapped park polygons; no random trees across surveyed streets.
 // Terminal roof ribs, air-conditioning equipment and facade mullions.
-for(let x=-825;x<-55;x+=26){objects.box(x,35,-375,1.1,1.4,81,'#dde0d7',8);}
+
 for(let x=-785;x<-115;x+=87){objects.box(x,35,-370,14,3.5,16,'#8f9997',8);objects.box(x,38.5,-370,12,.5,14,'#52646a',8);}
 for(let x=-420;x<15;x+=14){objects.box(x,5,-325,1.2,16,1.2,'#bac9c7',8);}
 // Garage canopies, doors, painted markings and roof ventilation.
@@ -261,7 +238,7 @@ const shadowFallback=gl.createTexture();gl.activeTexture(gl.TEXTURE7);gl.bindTex
 try{if(rendering.shadows)shadowMap=CircuitMaterials.shadows(gl,innerWidth<700?1024:2048)}catch(error){console.warn('陰影功能不可用；材質模式仍可使用。')}
 gl.useProgram(prog);gl.uniformMatrix4fv(loc.uLightVP,false,lightVP);gl.uniform1f(loc.uShadowEnabled,shadowMap&&shadowMap.ok?1:0);gl.uniform1f(loc.uShadowSize,shadowMap?shadowMap.size:1024);
 let cam={az:2.58,el:1.01,dist:3650,tx:0,ty:0,tz:-180},goal={...cam};let lastVP=null,eye=[0,0,0];
-function applyPreset(name){let presets={overview:{az:2.58,el:1.01,dist:3650,tx:0,ty:0,tz:-180},top:{az:Math.PI,el:1.565,dist:3500,tx:0,ty:0,tz:-50},pits:{az:.32,el:.72,dist:920,tx:-315,ty:18,tz:-10},west:{az:2.23,el:.73,dist:840,tx:-1060,ty:0,tz:-155},east:{az:3.92,el:.71,dist:890,tx:970,ty:0,tz:-85},city:{az:2.3,el:.94,dist:3900,tx:740,ty:0,tz:-2200}};goal={...presets[name==='reset'?'overview':name]};document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===name));let titles={overview:['01 / MASTERPLAN','松山機場 · 賽道全覽','東西向跑道化為長直線；南側航廈、北側基隆河與城市街廓環繞。'],top:['02 / OVERHEAD VIEW','正上方 · 賽道配置','看清跑道、彎道、維修區、航廈與基隆河的相對位置。'],pits:['03 / PADDOCK','F1 維修區 · 主直線','玻璃帷幕、開放車庫與 8 格維修停車區；主直線設有 20 個交錯起跑格。'],west:['04 / TECHNICAL SECTOR','西側 · 技術彎道','檢視低速彎角、路肩、觀眾席與緩衝空間。'],east:['05 / HIGH-SPEED SECTOR','東側 · 高速彎道','沿跑道末端進入複合連續彎，從低空觀看賽道高低層次。'],city:['06 / CITY CONTEXT','台北 101 · 都市全景','101 位於松山機場的東南方；周邊街廓為程序化概念建模。'],reset:['01 / MASTERPLAN','松山機場 · 賽道全覽','用滑鼠拖曳或單指滑動旋轉；滾輪／雙指縮放。右鍵拖曳或雙指平移。']}[name];document.getElementById('eyebrow').textContent=titles[0];document.getElementById('focusName').textContent=titles[1];document.getElementById('focusDesc').textContent=titles[2]}
+function applyPreset(name){let presets={overview:{az:2.58,el:1.01,dist:3650,tx:0,ty:0,tz:-180},top:{az:Math.PI,el:1.565,dist:3500,tx:0,ty:0,tz:-50},pits:{az:.32,el:.72,dist:920,tx:-315,ty:18,tz:-10},west:{az:2.23,el:.73,dist:840,tx:-1060,ty:0,tz:-155},east:{az:3.92,el:.71,dist:890,tx:970,ty:0,tz:-85},city:{az:2.3,el:.94,dist:3900,tx:740,ty:0,tz:-2200}};goal={...presets[name==='reset'?'overview':name]};document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===name));let titles={overview:['01 / MASTERPLAN','松山機場 · 賽道全覽','東西向跑道化為長直線；南側航廈、北側基隆河與城市街廓環繞。'],top:['02 / OVERHEAD VIEW','正上方 · 賽道配置','看清跑道、彎道、維修區、航廈與基隆河的相對位置。'],pits:['03 / PADDOCK','F1 維修區 · 主直線','玻璃帷幕、開放車庫與 8 格維修停車區；主直線設有 20 個交錯起跑格。'],west:['04 / TECHNICAL SECTOR','西側 · 技術彎道','檢視低速彎角、路肩、觀眾席與緩衝空間。'],east:['05 / HIGH-SPEED SECTOR','東側 · 高速彎道','沿跑道末端進入複合連續彎，從低空觀看賽道高低層次。'],city:['06 / CITY CONTEXT','台北 101 · 都市全景','101 位於松山機場的東南方；周邊街廓為依公開地圖輪廓建模，缺失高度採估算。'],reset:['01 / MASTERPLAN','松山機場 · 賽道全覽','用滑鼠拖曳或單指滑動旋轉；滾輪／雙指縮放。右鍵拖曳或雙指平移。']}[name];document.getElementById('eyebrow').textContent=titles[0];document.getElementById('focusName').textContent=titles[1];document.getElementById('focusDesc').textContent=titles[2]}
 document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{autospin=false;document.getElementById('auto').classList.remove('on');applyPreset(b.dataset.preset)});
 function updateButton(id,state){document.getElementById(id).classList.toggle('on',state);document.getElementById(id).setAttribute('aria-pressed',String(state))}document.getElementById('night').onclick=()=>{night=!night;updateButton('night',night);document.getElementById('night').textContent=night?'◐ 夜景':'☀ 日景'};document.getElementById('buildings').onclick=()=>{buildingsOn=!buildingsOn;updateButton('buildings',buildingsOn)};document.getElementById('labels').onclick=()=>{labelsOn=!labelsOn;updateButton('labels',labelsOn)};document.getElementById('auto').onclick=()=>{autospin=!autospin;updateButton('auto',autospin)};document.getElementById('zoomIn').onclick=()=>goal.dist=clamp(goal.dist*.76,190,9000);document.getElementById('zoomOut').onclick=()=>goal.dist=clamp(goal.dist*1.3,190,9000);
 const pointers=new Map();let lastPair=null;let moved=false;C.addEventListener('contextmenu',e=>e.preventDefault());C.addEventListener('pointerdown',e=>{C.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,prevX:e.clientX,prevY:e.clientY,button:e.button});lastPair=null;moved=false});C.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;for(const point of pointers.values()){point.prevX=point.x;point.prevY=point.y}let p=pointers.get(e.pointerId);p.prevX=p.x;p.prevY=p.y;p.x=e.clientX;p.y=e.clientY;let dx=p.x-p.prevX,dy=p.y-p.prevY;moved=moved||Math.hypot(dx,dy)>2;autospin=false;updateButton('auto',false);if(pointers.size===1){if(p.button===2||e.shiftKey){pan(dx,dy)}else{goal.az+=dx*.006;goal.el=clamp(goal.el+dy*.005,.16,1.565)}}else if(pointers.size===2){let arr=[...pointers.values()],A=arr[0],B=arr[1],now={cx:(A.x+B.x)/2,cy:(A.y+B.y)/2,dist:Math.hypot(A.x-B.x,A.y-B.y)},prev={cx:(A.prevX+B.prevX)/2,cy:(A.prevY+B.prevY)/2,dist:Math.hypot(A.prevX-B.prevX,A.prevY-B.prevY)};pan(now.cx-prev.cx,now.cy-prev.cy);if(prev.dist>1){goal.dist=clamp(goal.dist*prev.dist/Math.max(now.dist,2),190,9000)}}});for(let ev of ['pointerup','pointercancel','lostpointercapture'])C.addEventListener(ev,e=>{pointers.delete(e.pointerId);lastPair=null});function pan(dx,dy){let s=goal.dist/(Math.min(cw,ch)*1.6);goal.tx+=cos(goal.az)*dx*s;goal.tz-=sin(goal.az)*dx*s;goal.tx-=sin(goal.az)*dy*s*1.0;goal.tz-=cos(goal.az)*dy*s*1.0;goal.tx=clamp(goal.tx,-4000,4000);goal.tz=clamp(goal.tz,-5300,2100)}C.addEventListener('wheel',e=>{e.preventDefault();goal.dist=clamp(goal.dist*Math.exp(e.deltaY*.0011),190,9000)},{passive:false});window.addEventListener('keydown',e=>{if(e.key==='+')goal.dist=clamp(goal.dist*.82,190,9000);if(e.key==='-')goal.dist=clamp(goal.dist*1.2,190,9000);if(e.key==='ArrowLeft')goal.az-=.14;if(e.key==='ArrowRight')goal.az+=.14;if(e.key==='ArrowUp')goal.el=clamp(goal.el-.12,.16,1.565);if(e.key==='ArrowDown')goal.el=clamp(goal.el+.12,.16,1.565);if(e.key==='0')applyPreset('overview')});
@@ -273,7 +250,7 @@ let sc=Math.min((w-28)/2770,(h-25)/550),ox=w/2,oy=h/2;ctx.save();ctx.translate(o
 // Label projection: source world position through VP matrix
 const tagEls=[...document.querySelectorAll('.tag')];function project(p,vp){let x=p[0],y=p[1],z=p[2],w=vp[3]*x+vp[7]*y+vp[11]*z+vp[15];if(w<=0)return null;let xx=(vp[0]*x+vp[4]*y+vp[8]*z+vp[12])/w,yy=(vp[1]*x+vp[5]*y+vp[9]*z+vp[13])/w,zz=(vp[2]*x+vp[6]*y+vp[10]*z+vp[14])/w;if(Math.abs(xx)>1||Math.abs(yy)>1||zz>1)return null;return [(xx*.5+.5)*cw,(1-(yy*.5+.5))*ch]}
 function resize(){dpr=Math.min(innerWidth<700||rendering.ios?1.5:2,devicePixelRatio||1);let w=innerWidth,h=innerHeight;if(C.width!==Math.round(w*dpr)||C.height!==Math.round(h*dpr)){C.width=Math.round(w*dpr);C.height=Math.round(h*dpr);C.style.width=w+'px';C.style.height=h+'px'}cw=w;ch=h;gl.viewport(0,0,C.width,C.height)}
-let contextLost=false;C.addEventListener('webglcontextlost',e=>{e.preventDefault();contextLost=true;document.getElementById('errorText').textContent='3D 繪圖連線中斷，請重新載入恢復場景。';document.getElementById('error').style.display='block'});C.addEventListener('webglcontextrestored',()=>location.reload());let started=performance.now();function loop(now){if(contextLost)return;if(shadowMap&&shadowCity!==buildingsOn){shadowMap.render(buildingsOn?[meshes.city,meshes.objects]:[meshes.objects],lightVP);shadowCity=buildingsOn;gl.useProgram(prog)}resize();if(autospin)goal.az+=.0008;for(let key of Object.keys(cam)){let a=cam[key],b=goal[key];cam[key]+=(b-a)*.105}cam.dist=clamp(cam.dist,190,9000);let cd=cam.dist;eye=[cam.tx+sin(cam.az)*cos(cam.el)*cd,cam.ty+sin(cam.el)*cd,cam.tz+cos(cam.az)*cos(cam.el)*cd];let vp=matMul(projection(2*Math.atan(Math.tan(.44)*Math.max(1,.95/(cw/ch))),cw/ch,4,14500),lookAt(eye,[cam.tx,cam.ty,cam.tz]));lastVP=vp;
+let contextLost=false;C.addEventListener('webglcontextlost',e=>{e.preventDefault();contextLost=true;document.getElementById('errorText').textContent='3D 繪圖連線中斷，請重新載入恢復場景。';document.getElementById('error').style.display='block'});C.addEventListener('webglcontextrestored',()=>location.reload());let started=performance.now(),lastFrame=started;function loop(now){if(contextLost)return;if(shadowMap&&shadowCity!==buildingsOn){shadowMap.render(buildingsOn?[meshes.city,meshes.objects]:[meshes.objects],lightVP);shadowCity=buildingsOn;gl.useProgram(prog)}resize();const dt=Math.min(250,Math.max(0,now-lastFrame));lastFrame=now;const easing=1-Math.exp(-dt/150);if(autospin)goal.az+=.000048*dt;for(let key of Object.keys(cam)){let a=cam[key],b=goal[key];cam[key]+=(b-a)*easing}cam.dist=clamp(cam.dist,190,9000);let cd=cam.dist;eye=[cam.tx+sin(cam.az)*cos(cam.el)*cd,cam.ty+sin(cam.el)*cd,cam.tz+cos(cam.az)*cos(cam.el)*cd];let vp=matMul(projection(2*Math.atan(Math.tan(.44)*Math.max(1,.95/(cw/ch))),cw/ch,4,14500),lookAt(eye,[cam.tx,cam.ty,cam.tz]));lastVP=vp;
 let fog=night?[.035,.065,.11]:[.55,.67,.74];materialAtlas.forEach((texture,i)=>{gl.activeTexture(gl.TEXTURE0+i);gl.bindTexture(gl.TEXTURE_2D,texture)});gl.activeTexture(gl.TEXTURE7);gl.bindTexture(gl.TEXTURE_2D,shadowMap&&shadowMap.ok?shadowMap.texture:shadowFallback);gl.uniform1f(loc.uTime,(now-started)*.001);CircuitMaterials.beginFrame(gl,C.width,C.height,fog);gl.uniformMatrix4fv(loc.uVP,false,vp);gl.uniform3fv(loc.uEye,new Float32Array(eye));gl.uniform1f(loc.uNight,night?1:0);gl.uniform3fv(loc.uFog,new Float32Array(fog));bindMesh(meshes.base);if(buildingsOn)bindMesh(meshes.city);bindMesh(meshes.objects);bindMesh(meshes.emissive);bindMesh(cars(now-started));
 for(let el of tagEls){let p=[+el.dataset.x,+el.dataset.y,+el.dataset.z],res=labelsOn?project(p,vp):null;if(!res){el.style.display='none';continue}el.style.display='block';el.style.left=res[0]+'px';el.style.top=res[1]+'px'}document.getElementById('compass').style.transform='rotate('+(Math.atan2(sin(cam.az),-cos(cam.az)*sin(cam.el))*180/PI)+'deg)';drawMap();requestAnimationFrame(loop)}applyPreset('overview');requestAnimationFrame(loop);
 })();

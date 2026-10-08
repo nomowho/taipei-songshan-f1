@@ -23,26 +23,33 @@ function atlasData(){
   if(id===1){shade=.62+n*.66;if(n>.97)shade*=1.19;}
   if(id===2||id===5){shade=.62+n*.48+coarse*.18;if((u+v*3)%19<2)shade*=.82;}
   if(id===3){shade=.98+(n-.5)*.045+.018*Math.sin(u*Math.PI/64)*Math.cos(v*Math.PI/64);if(n<.014)shade*=.93;}
-  if(id===4||id===8){shade=.82+n*.08+.13*Math.cos(u*Math.PI/8);if(u%32<2)shade*=.55;}
+  if(id===4||id===8){shade=.96+(n-.5)*.018;}
   if(id===6||id===11){const row=v/16|0;if(v%16<2||(u+(row%2)*16)%32<2)shade*=.66;}
-  if(id===7){if(u%32<1||v%32<1)shade*=.67;}
+  if(id===7){shade=.96+(n-.5)*.018;}
   const k=(y*size+x)*4;for(let ch=0;ch<3;ch++)data[k+ch]=Math.max(0,Math.min(255,Math.round(c[ch]*shade)));data[k+3]=255;
  }
  return {size,data};
+}
+function brandTexture(gl){
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=512;const c=canvas.getContext('2d');
+ const brands=[['PIRELLI','#f6d52c','#cf202d'],['DHL','#ffce00','#d71d28'],['Lenovo','#dc2936','#ffffff'],['TAIPEI GP','#102635','#e7f3f4']];
+ brands.forEach(([name,bg,fg],i)=>{const y=(3-i)*128;c.fillStyle=bg;c.fillRect(0,y,1024,128);c.fillStyle=fg;c.font='italic 800 78px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(name,512,y+53);c.font='700 15px Arial';c.fillText('CONCEPT DISPLAY',512,y+108)});
+ const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return t;
 }
 function texture(gl){
  const {size,data}=atlasData();
  // Separate repeating tiles keep derivatives continuous across seams. Seven
  // material samplers plus one shadow sampler fit WebGL 1's minimum limit.
  return [0,1,2,3,4,6,7].map((id,unit)=>{
+  if(id===7){gl.activeTexture(gl.TEXTURE0+unit);return brandTexture(gl)}
   const pixels=new Uint8Array(128*128*4),sx=(id%4)*128,sy=Math.floor(id/4)*128;
   for(let y=0;y<128;y++)pixels.set(data.subarray(((sy+y)*size+sx)*4,((sy+y)*size+sx+128)*4),y*128*4);
   const t=gl.createTexture();gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,t);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,128,128,0,gl.RGBA,gl.UNSIGNED_BYTE,pixels);gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);return t;
  });
 }
 const vertex=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute vec2 aUV;attribute float aType;
-uniform mat4 uVP;uniform mat4 uLightVP;varying vec3 vPos;varying vec3 vN;varying vec3 vC;varying vec2 vUV;varying float vType;varying vec4 vShadow;
-void main(){vPos=aPos;vN=aNorm;vC=aCol;vUV=aUV;vType=aType;vShadow=uLightVP*vec4(aPos,1.);gl_Position=uVP*vec4(aPos,1.);}`;
+uniform float uTime;uniform mat4 uVP;uniform mat4 uLightVP;varying vec3 vPos;varying vec3 vN;varying vec3 vC;varying vec2 vUV;varying float vType;varying vec4 vShadow;
+void main(){vPos=aPos;vN=aNorm;vC=aCol;vUV=aUV;vType=aType;vShadow=uLightVP*vec4(aPos,1.);vec3 p=aPos;if(aType>14.5&&aType<15.5)p.z+=sin(uTime*1.7+aPos.x*.22)*1.7*aUV.x;gl_Position=uVP*vec4(p,1.);}`;
 const fragment=`
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -65,7 +72,8 @@ void main(){
  vec3 N=normalize(vN),V=normalize(uEye-vPos),L=normalize(vec3(-.52,.80,.34));float sun=max(dot(N,L),0.);
  float dist=length(uEye-vPos),detail=1.-smoothstep(800.,3600.,dist);vec2 surface=abs(N.y)>.6?vPos.xz:(abs(N.x)>.6?vPos.zy:vPos.xy);
  vec3 albedo=vC;float rough=.8;vec3 emission=vec3(0.);float material=floor(vType+.1);
- if(material==12.){albedo=mix(vC*.38,vC*.15,uNight);emission=vC*uNight*2.;rough=.22;}
+ if(material==14.||material==15.){albedo=texture2D(uRoof,vUV).rgb;rough=.65;emission=albedo*(.24+uNight*.70);}
+ else if(material==12.){albedo=mix(vC*.38,vC*.15,uNight);emission=vC*uNight*2.;rough=.22;}
  else if(material==13.){
    vec2 pane=fract(vUV*.7);float window=step(.045,pane.x)*(1.-step(.955,pane.x))*step(.055,pane.y)*(1.-step(.945,pane.y));
    window=mix(.88,window,1.-smoothstep(450.,1500.,dist));
@@ -98,8 +106,7 @@ void main(){
  else if(material<4.5){albedo*=tex(1.,surface*.33)*4.;rough=.96;}
  else if(material<5.5){albedo*=tex(2.,surface*.09)*2.4;rough=1.;}
  else if(material<6.5){albedo*=tex(3.,surface*.055)*1.65;rough=.91;}
- else if(material<7.5){albedo*=tex(7.,surface*.055)*1.8;rough=.78;}
- else if(material<8.5){albedo*=tex(4.,surface*.055)*1.55;rough=.33;}
+ else if(material<8.5){albedo*=.92;rough=.16;}
  else{albedo*=tex(5.,surface*.22)*2.;rough=.95;}
  float sh=shadow(N);float hemi=N.y*.5+.5;vec3 ambient=mix(vec3(.27,.29,.31),vec3(.54,.62,.70),hemi);
  ambient=mix(ambient,ambient*vec3(.58,.65,.84),uNight);
@@ -108,6 +115,14 @@ void main(){
  vec3 c=albedo*(ambient+direct)*baseAO;
  vec3 H=normalize(L+V);float spec=pow(max(dot(N,H),0.),mix(75.,5.,rough))*(1.-rough)*sh;
  c+=mix(vec3(.44,.42,.37),vec3(.13,.21,.28),uNight)*spec+emission;
+ if(material==7.||material==8.){
+  vec3 R=reflect(-V,N);float sky=smoothstep(-.12,.75,R.y);
+  vec3 env=mix(vec3(.18,.23,.26),vec3(.76,.86,.91),sky);
+  env=mix(env,env*vec3(.24,.35,.51),uNight);
+  float rim=pow(1.-max(dot(N,V),0.),3.);
+  c=mix(c,env*mix(vec3(1.),vC,.28),.62+rim*.2);
+  c+=vec3(.76,.86,.94)*pow(max(dot(R,L),0.),72.)*mix(.85,.28,uNight);
+ }
  float fog=smoothstep(3900.,11500.,dist)*.64;c=mix(c,uFog,fog);c=pow(max(c,vec3(0.)),vec3(.90));gl_FragColor=vec4(c,1.);
 }`;
 // Static packed-depth shadow map. Re-render only when building visibility changes.
