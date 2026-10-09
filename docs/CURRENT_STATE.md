@@ -1,3 +1,5 @@
+> 2026-10-09 A1 配置與地標更新請以 [A1_RELEASE.md](A1_RELEASE.md) 為準；以下為歷史交接紀錄。
+
 > 本文件記錄原始交接狀態。2026-10-08 接手修正及已完成部署的狀態請以 [RELEASE_QA.md](RELEASE_QA.md)、[IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md) 及後續 [MATERIAL_UPGRADE.md](MATERIAL_UPGRADE.md) 為準。材質版本新增同目錄的 `materials.js`，部署時不可遺漏。
 
 # Current code and handoff reality

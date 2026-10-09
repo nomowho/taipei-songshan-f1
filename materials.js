@@ -31,9 +31,9 @@ function atlasData(){
  return {size,data};
 }
 function brandTexture(gl){
- const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=512;const c=canvas.getContext('2d');
- const brands=[['PIRELLI','#f6d52c','#cf202d'],['DHL','#ffce00','#d71d28'],['Lenovo','#dc2936','#ffffff'],['TAIPEI GP','#102635','#e7f3f4']];
- brands.forEach(([name,bg,fg],i)=>{const y=(3-i)*128;c.fillStyle=bg;c.fillRect(0,y,1024,128);c.fillStyle=fg;c.font='italic 800 78px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(name,512,y+53);c.font='700 15px Arial';c.fillText('CONCEPT DISPLAY',512,y+108)});
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=2048;const c=canvas.getContext('2d');
+ const brands=[['PIRELLI','#f6d52c','#cf202d'],['DHL','#ffce00','#d71d28'],['Lenovo','#dc2936','#ffffff'],...CircuitTeams.teams.map(t=>[t.name,t.color,t.ink]),['TAIPEI GP','#102635','#e7f3f4']];
+ brands.forEach(([name,bg,fg],i)=>{const y=(15-i)*128;c.fillStyle=bg;c.fillRect(0,y,1024,128);c.fillStyle=fg;c.font=(i<3?'italic 800 ':'800 ')+(name.length>12?60:78)+'px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(name,512,y+53);c.font='700 15px Arial';c.fillText(i>=3&&i<14?'PIT '+String(i-2).padStart(2,'0')+' / CONCEPT DISPLAY':'CONCEPT DISPLAY',512,y+108)});
  const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return t;
 }
 function texture(gl){
@@ -48,8 +48,10 @@ function texture(gl){
  });
 }
 const vertex=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute vec2 aUV;attribute float aType;
-uniform float uTime;uniform mat4 uVP;uniform mat4 uLightVP;varying vec3 vPos;varying vec3 vN;varying vec3 vC;varying vec2 vUV;varying float vType;varying vec4 vShadow;
-void main(){vPos=aPos;vN=aNorm;vC=aCol;vUV=aUV;vType=aType;vShadow=uLightVP*vec4(aPos,1.);vec3 p=aPos;if(aType>14.5&&aType<15.5)p.z+=sin(uTime*1.7+aPos.x*.22)*1.7*aUV.x;gl_Position=uVP*vec4(p,1.);}`;
+uniform float uCarScale;uniform float uCarGround;uniform vec4 uCarPose;uniform float uTime;uniform mat4 uVP;uniform mat4 uLightVP;varying vec3 vPos;varying vec3 vN;varying vec3 vC;varying vec2 vUV;varying float vType;varying vec4 vShadow;
+void main(){vec3 p=aPos,n=aNorm;
+if(uCarScale>0.){float c=uCarPose.z,s=uCarPose.w;p=vec3(uCarPose.x+(c*aPos.x-s*aPos.z)*uCarScale,uCarGround+aPos.y*uCarScale,uCarPose.y+(s*aPos.x+c*aPos.z)*uCarScale);n=vec3(c*aNorm.x-s*aNorm.z,aNorm.y,s*aNorm.x+c*aNorm.z);}
+vPos=p;vN=n;vC=aCol;vUV=aUV;vType=aType;vShadow=uLightVP*vec4(p,1.);if(aType>14.5&&aType<15.5)p.z+=sin(uTime*1.7+p.x*.22)*1.7*aUV.x;gl_Position=uVP*vec4(p,1.);}`;
 const fragment=`
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;

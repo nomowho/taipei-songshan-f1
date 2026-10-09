@@ -13,10 +13,11 @@ function controls(fallback=false){
   const button={classList:{remove(){},toggle(){}},setAttribute(){}};
   const env={C,goal,g,Map,Math,cos:Math.cos,sin:Math.sin,cw:1000,ch:1000,w:1000,h:1000,
     clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),cl:(x,a,b)=>Math.max(a,Math.min(b,x)),
-    autospin:false,auto:false,updateButton(){},applyPreset(){},document:{getElementById:()=>button},$:()=>button,
+    autospin:false,auto:false,updateButton(){},applyPreset(){},stopOnboard(){},document:{getElementById:()=>button},$:()=>button,
     window:{addEventListener(k,f){events[k]=f}},};
   const start=fallback?html.indexOf('let pointers=new Map();'):html.indexOf('const pointers=new Map();');
-  const end=html.indexOf(fallback?'let proj;function render()':'function carGeom(',start);
+  const end=html.indexOf(fallback?'let proj;function render()':'const racingMeshes=',start);
+  assert.ok(start>=0&&end>start,'input handler section must be located');
   vm.runInNewContext(html.slice(start,end),env);
   return {state:fallback?g:goal,event(k,id,x,y,extra={}){
     const e={pointerId:id,clientX:x,clientY:y,button:0,preventDefault(){},target:C,...extra};

@@ -19,6 +19,7 @@ function build(data,base,city){
   }
  }
  for(const [id,ring,height,source,tri] of data.buildings){
+  if(id===155816458||id===25202548)continue; // Replaced by mapped-position landmark models.
   const floor=-8,top=floor+height,color=height>65?'#69868e':colors[id%colors.length],type=height>65?10:11;
   for(let i=0;i<ring.length;i++){
    const a=ring[i],b=ring[(i+1)%ring.length],w=Math.hypot(b[0]-a[0],b[1]-a[1]);
@@ -31,6 +32,7 @@ function fallback(data,poly,strip){
  for(const line of data.rivers)for(let i=1;i<line.length;i++)strip([line[i-1],line[i]],178,-7,'#27444d');
  for(const [,name,kind,width,y,line] of data.roads){for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i];if(!inConcept((a[0]+b[0])/2,(a[1]+b[1])/2))strip([a,b],width,y,'#454c50')}}
  for(const [id,ring,h,source,tri] of data.buildings){
+  if(id===155816458||id===25202548)continue;
   for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length];poly([[a[0],-8,a[1]],[b[0],-8,b[1]],[b[0],h-8,b[1]],[a[0],h-8,a[1]]],i%2?'#657782':'#829194','city')}
   for(let i=0;i<tri.length;i+=3)poly(tri.slice(i,i+3).map(k=>[ring[k][0],h-8,ring[k][1]]),'#a5b1b1','city');
  }

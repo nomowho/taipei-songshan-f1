@@ -2,13 +2,17 @@
 
 **非官方概念設計 / UNOFFICIAL CONCEPT**。並非真實賽事，未宣稱 Formula 1 官方授權或 FIA 認證。
 
-沿用既有自製 WebGL 場景，無需安裝套件，無外部 JavaScript 或素材請求。保留旋轉、平移、縮放、四個視角（全區、維修區、西側、東側）、日夜切換、建築／地標切換、自動環繞與同步賽道小地圖。
+沿用既有自製 WebGL 場景，無需安裝套件，無外部 JavaScript 或素材請求。保留旋轉、平移、縮放、七個視角（全區、維修區、西側、東側、河岸、美麗華、圓山飯店）、日夜切換、建築／地標切換、自動環繞與同步賽道小地圖。
 
 材質更新：住宅磁磚、玻璃帷幕、屋頂設備、金屬板、瀝青、水泥鋪面、樹冠與動態水面。`materials.js` 在本機產生原創貼圖並處理光照／投影；部署時須與 `index.html` 一起上傳。詳見 `docs/MATERIAL_UPGRADE.md`。
 
-最新調整：手機小地圖上移、iPhone 相容繪圖路徑、無格線清水模、金屬及玻璃帷幕車庫、夜間屋緣燈條、8 台停放賽車與 20 個交錯起跑格。檢查紀錄及真機驗證限制見 `docs/MOBILE_AND_PIT_UPDATE.md`。
+最新調整：手機小地圖上移、iPhone 相容繪圖路徑、無格線清水模、金屬及玻璃帷幕車庫、夜間屋緣燈條、11 隊停放賽車與 22 個交錯起跑格。檢查紀錄及真機驗證限制見 `docs/MOBILE_AND_PIT_UPDATE.md`。
 
 最新地圖版：以 OpenStreetMap 實際道路與建物輪廓取代方格街廓，高度優先採用已知高度／樓層；屋頂改為無線條金屬反光，新增品牌文字看板及旗幟。必須一併部署 `city.js` 與 `data/taipei-map.js`；來源、ODbL 授權及估算範圍見 [MAP_SOURCES.md](docs/MAP_SOURCES.md)。
+
+最新 A1 配置：5.733 km、17 彎、R20 m 東端髮夾、北側河岸 S 彎、西側技術區、492 m 維修道、11 車隊＋1 預備庫。新增美麗華摩天輪、圓山大飯店、可放大的 Sector 小地圖與 3D 車載一圈。詳見 [A1_RELEASE.md](docs/A1_RELEASE.md)。
+
+部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
 
 ## 操作
 
