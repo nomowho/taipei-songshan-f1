@@ -28,7 +28,7 @@
 - 瀏覽器實測：桌面 1279×720、手機 390×844，WebGL／compatible 與 `?renderer=2d` 載入，預設視角、地標、日夜切換、小地圖展開、車載畫面均可運作；檢查期間無 console error/warn。
 - 操作回歸：以真實輸入處理器的自動測試驗證旋轉、平移、滾輪界限、雙指平移／縮放不重播前一個位移。未使用實體 iPhone／Safari，不宣稱已完成真機殘影及效能驗收。
 - 獨立程式審查修正路面法線、圓山小屋頂位移、行駛車輪胎高度及 halo 管線法線。
-- 部署狀態：待提交後由 GitHub Pages 建置與公開網址比對確認；確認結果記於交付訊息。
+- 部署已確認：功能提交 `23e1f481132529cb4a6b3076de2661378fa55b2b` 的 Pages 建置狀態為 `built`；公開 HTML、7 個功能模組與 OSM 資料共 9 檔均匿名 HTTP 200，內容逐一比對一致。公開網站實際渲染 LIVE 3D，console 無 error/warn。網址：https://nomowho.github.io/taipei-songshan-f1/
 
 ## 規則參考
 
