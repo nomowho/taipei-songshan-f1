@@ -4,8 +4,30 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const html=readFileSync(join(__dirname,'../index.html'),'utf8');
 const env={Math,cos:Math.cos,sin:Math.sin,PI:Math.PI,RGB:hex=>hex.replace('#','').match(/../g).map(s=>parseInt(s,16)/255)};
 vm.runInNewContext(html.slice(html.indexOf('function createMesh()'),html.indexOf('// Catmull-Rom')),env);
-function build(){const file=join(__dirname,'../landmarks.js');assert.ok(require('node:fs').existsSync(file),'landmark builder must exist');const landmarks=require(file),mesh=env.createMesh();landmarks.build(mesh);return {landmarks,vertices:Array.from({length:mesh.arr.length/12},(_,i)=>mesh.arr.slice(i*12,i*12+12))};}
+function build(){const file=join(__dirname,'../landmarks.js');assert.ok(require('node:fs').existsSync(file),'landmark builder must exist');const landmarks=require(file),mesh=env.createMesh();landmarks.build(mesh);const rendered=Array.from({length:mesh.arr.length/12},(_,i)=>mesh.arr.slice(i*12,i*12+12));
+ // Existing architectural checks use native dimensions; the separate scale test
+ // verifies every rendered vertex, including the mall, terraces and side roofs.
+ const vertices=rendered.map(v=>{const p=v[0]>=0?landmarks.places.miramar:landmarks.places.grandHotel,s=p.displayScale||1;return [p.x+(v[0]-p.x)/s,-8+(v[1]+8)/s,p.z+(v[2]-p.z)/s,...v.slice(3)];});return {landmarks,vertices,rendered};}
 function bounds(vertices){return [0,1,2].map(i=>[Math.min(...vertices.map(p=>p[i])),Math.max(...vertices.map(p=>p[i]))]);}
+test('both complete landmarks render at exactly five times native size about their geographic ground anchors',()=>{
+ const {landmarks,rendered}=build();
+ for(const p of Object.values(landmarks.places))assert.equal(p.displayScale,5);
+ assert.ok(Math.abs(landmarks.places.miramar.x-525.1834315760998)<1e-8);assert.ok(Math.abs(landmarks.places.miramar.z-1570.297862000064)<1e-8);
+ assert.ok(Math.abs(landmarks.places.grandHotel.x+2633.640962633572)<1e-8);assert.ok(Math.abs(landmarks.places.grandHotel.z-1115.9118860002839)<1e-8);
+ const native=env.createMesh();try{for(const p of Object.values(landmarks.places))p.displayScale=1;landmarks.build(native);}finally{for(const p of Object.values(landmarks.places))p.displayScale=5;}
+ assert.equal(native.arr.length,rendered.length*12,'scaling adds no geometry');
+ for(let i=0;i<rendered.length;i++){
+  const original=native.arr.slice(i*12,i*12+12),p=original[0]>=0?landmarks.places.miramar:landmarks.places.grandHotel;
+  const want=[p.x+5*(original[0]-p.x),-8+5*(original[1]+8),p.z+5*(original[2]-p.z)];
+  for(let axis=0;axis<3;axis++)assert.ok(Math.abs(rendered[i][axis]-want[axis])<1e-8,'uniform size and fixed geographic centre');
+  for(let axis=3;axis<12;axis++)assert.ok(Math.abs(rendered[i][axis]-original[axis])<1e-8,'normals, UVs and materials are preserved');
+ }
+ for(const p of Object.values(landmarks.places)){
+  const b=bounds(rendered.filter(v=>p===landmarks.places.miramar?v[0]>=0:v[0]<0)),flat=[b[0][0],b[2][0],b[0][1],b[2][1]];
+  flat.forEach((n,i)=>assert.ok(Math.abs(n-p.displayBounds[i])<1e-8,'bounds cover the actual rendered mesh'));
+  assert.deepEqual(p.verticalBounds,b[1]);assert.ok(p.labelY>b[1][1]+20,'labels clear the enlarged silhouette');
+ }
+});
 test('landmark mesh remains finite, correctly normalized and affordable',()=>{
  const {vertices}=build();assert.ok(vertices.length>12000);assert.ok(vertices.length<100000,'static landmarks must not dominate the city mesh');
  for(const v of vertices){assert.ok(v.every(Number.isFinite));assert.ok(Math.abs(Math.hypot(...v.slice(3,6))-1)<1e-6,'no zero-area triangles');}

@@ -3,14 +3,17 @@
 'use strict';
 const PI=Math.PI,GROUND=-8;
 function projected(lon,lat){return [(lon-121.55250715)*111320*Math.cos(25.06959915*PI/180),(lat-25.06959915)*111320+100];}
-function place(name,lon,lat,ids,geoBounds){const [x,z]=projected(lon,lat),a=projected(geoBounds[0],geoBounds[1]),b=projected(geoBounds[2],geoBounds[3]);return {name,lon,lat,x,z,exclude:{osmIds:ids,bounds:[a[0],a[1],b[0],b[1]]}};}
+function place(name,lon,lat,ids,geoBounds){const [x,z]=projected(lon,lat),a=projected(geoBounds[0],geoBounds[1]),b=projected(geoBounds[2],geoBounds[3]);return {name,lon,lat,x,z,displayScale:5,exclude:{osmIds:ids,bounds:[a[0],a[1],b[0],b[1]]}};}
 const places={
  miramar:place('美麗華摩天輪',121.5577156,25.082807,[155816458],[121.5566439,25.082784,121.5582749,25.0837817]),
  grandHotel:place('圓山大飯店',121.5263883,25.0787252,[25202548],[121.5256799,25.0781821,121.5269049,25.0790551])
 };
 // All primitives pass through quad/tri: identical geometry in WebGL and Canvas2D.
 function localMesh(mesh,place,angle=0){
- const c=Math.cos(angle),s=Math.sin(angle),point=p=>[place.x+c*p[0]-s*p[2],p[1],place.z+s*p[0]+c*p[2]];
+ const c=Math.cos(angle),s=Math.sin(angle),scale=place.displayScale||1;
+ // Local nested roof offsets use scale=1; only the geographic place applies
+ // the requested uniform display scale, about its x/z anchor and scene ground.
+ const point=p=>[place.x+scale*(c*p[0]-s*p[2]),GROUND+scale*(p[1]-GROUND),place.z+scale*(s*p[0]+c*p[2])];
  const m={quad:(a,b,c,d,color,type=0)=>mesh.quad(point(a),point(b),point(c),point(d),color,type),tri:(a,b,c,color,type=0)=>mesh.tri(point(a),point(b),point(c),color,type)};
  m.box=function(x,y,z,w,h,d,color,type=0){const a=x-w/2,b=x+w/2,l=z-d/2,r=z+d/2,t=y+h;
   m.quad([a,y,l],[b,y,l],[b,t,l],[a,t,l],color,type);m.quad([b,y,r],[a,y,r],[a,t,r],[b,t,r],color,type);
@@ -109,5 +112,14 @@ function grandHotel(mesh){
  for(let j=0;j<10;j++)m.box(0,28+j*.4,-62+j*.9,53,.4,1.1,stone);
 }
 function build(mesh){miramar(mesh);grandHotel(mesh);return mesh;}
+// Measure the generated primitives once so clearance metadata is available
+// before the city is constructed. No measurement vertices enter render buffers.
+function describe(place,builder){
+ const b=[Infinity,Infinity,-Infinity,-Infinity],y=[Infinity,-Infinity];
+ function record(points){for(const p of points){b[0]=Math.min(b[0],p[0]);b[1]=Math.min(b[1],p[2]);b[2]=Math.max(b[2],p[0]);b[3]=Math.max(b[3],p[2]);y[0]=Math.min(y[0],p[1]);y[1]=Math.max(y[1],p[1]);}}
+ builder({quad:(a,b,c,d)=>record([a,b,c,d]),tri:(a,b,c)=>record([a,b,c])});
+ place.displayBounds=b;place.verticalBounds=y;place.labelY=y[1]+40;
+}
+describe(places.miramar,miramar);describe(places.grandHotel,grandHotel);
 const api={places,build};if(typeof module==='object'&&module.exports)module.exports=api;else root.CircuitLandmarks=api;
 })(typeof window==='object'?window:this);

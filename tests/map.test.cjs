@@ -19,3 +19,14 @@ test('map projection keeps north/east orientation and reference runway centre',(
  assert.equal(map.projection.zMetersPerDegree,111320);assert.equal(map.projection.runwayZ,100);
  assert.ok(map.origin[0]>121.55&&map.origin[0]<121.56);
 });
+
+test('cleared spectator corridor follows the near riverbank and preserves opposite-bank buildings',()=>{
+ const city=require('../city.js'),ring=(x,z)=>[[x-5,z-5],[x+5,z-5],[x+5,z+5],[x-5,z+5]];
+ assert.ok(city.riverShore(map,0)>650&&city.riverShore(map,0)<700);
+ assert.equal(city.omitBuilding(map,1,ring(0,450),{}),true);
+ assert.equal(city.omitBuilding(map,1,ring(0,900),{}),false);
+ assert.equal(city.omitBuilding(map,1,ring(0,-700),{}),false);
+ assert.equal(city.omitBuilding(map,1,ring(850,480),{}),false,'north of near bank must not be cleared as the airport corridor');
+ const places=require('../landmarks.js').places;
+ for(const p of Object.values(places))assert.equal(city.omitBuilding(map,1,ring(p.x,p.z),places),true);
+});

@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 let layout;try{layout=require('../circuit.js')}catch{}
-test('approved A1 geometry has measured length, 17 turns and a compact pit lane',()=>{
+test('B1 winding geometry has measured length, 17 turns and a compact pit lane',()=>{
  assert.ok(layout,'shared A1 circuit module must exist');
- assert.ok(Math.abs(layout.length-5732.66)<.1);assert.equal(layout.turns.length,17);
+ assert.ok(Math.abs(layout.length-5896.33)<.1);assert.equal(layout.turns.length,17);
  assert.ok(layout.pitLength>=400&&layout.pitLength<=500);assert.equal(layout.grid.length,22);
- assert.equal(layout.laps,54);assert.ok(layout.laps*layout.length>305000);
+ assert.equal(layout.laps,52);assert.ok(layout.laps*layout.length>305000);
 });
 test('route closes, remains inside airfield and avoids terminal footprint including road width',()=>{
  assert.ok(layout,'shared A1 circuit module must exist');
@@ -48,4 +48,9 @@ test('fallback road remains above nearby runoff and grid stays above road',()=>{
  const compare=require('node:vm').runInNewContext(source);
  const polygons=[{id:'grid',layer:1,groundY:2.12,z:600},{id:'road',layer:1,groundY:1.65,z:500},{id:'runoff',layer:1,groundY:1.1,z:200},{id:'ground',layer:0,groundY:-13,z:10}];
  polygons.sort(compare);assert.deepEqual(polygons.map(p=>p.id),['ground','runoff','road','grid']);
+});
+
+test('road doubles A1 width and river section uses deeper bends without cutting main straight',()=>{
+ assert.equal(layout.widthAt([500,101]),30);assert.equal(layout.widthAt([-350,101]),48);assert.equal(layout.widthAt([720,300]),24);
+ assert.ok(Math.max(...layout.track.map(p=>p[1]))>310);assert.ok(Math.max(...layout.track.map(p=>p[1]))<330);
 });

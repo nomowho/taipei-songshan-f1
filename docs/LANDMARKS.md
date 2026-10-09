@@ -2,6 +2,8 @@
 
 `landmarks.js` provides static, original interpretive models of Miramar's rooftop wheel and the Grand Hotel. They share the existing east +X / north +Z map projection. The models are architectural approximations, not surveyed CAD or photogrammetry.
 
+**B1 display revision:** both complete landmarks now render at the user's requested **5× uniform display scale**, including Miramar's mall and the hotel's terraced hill. Longitude/latitude and the projected x/z anchors remain fixed. Height scales about scene ground y=-8: `displayY=-8+5*(nativeY+8)`. This is deliberate visual enlargement; displayed dimensions are not real-world building measurements. The source facts and native model dimensions below describe the original unscaled geometry.
+
 ## API and integration
 
 Load `landmarks.js` before the main scene script. Its browser global is `CircuitLandmarks`; CommonJS exports the same `{places, build}` object.
@@ -14,7 +16,14 @@ const hotel = CircuitLandmarks.places.grandHotel;
 
 The builder requires only `mesh.quad(a,b,c,d,color,type)` and `mesh.tri(a,b,c,color,type)`. All local transforms, boxes and tubes become these primitives. A Canvas2D adapter can therefore use the same geometry. There is no WebGL, DOM, animation or external runtime dependency in this module. Materials are 0 solid, 8 metal, 10 glass, and 12 night LED; the scene's existing theme shader controls illumination.
 
-Each place has `name`, `lon`, `lat`, projected `x`/`z`, and `exclude: {osmIds, bounds}`. Bounds use **[minimum X, minimum Z, maximum X, maximum Z]** in metres. Before building the city, remove only the matching OSM building IDs from the city geometry in both rendering modes. Bounds are a fallback for datasets without IDs, not a reason to erase every nearby street, park or hotel outbuilding.
+Each place has `name`, `lon`, `lat`, projected `x`/`z`, `displayScale:5`, and `exclude: {osmIds, bounds}`. Geographic exclusion bounds use **[minimum X, minimum Z, maximum X, maximum Z]** in metres. B1 also provides `displayBounds` in that same array format, `verticalBounds:[minimumY,maximumY]`, and `labelY`. These display bounds are measured directly from the generated scaled primitives once when the module loads, so they are available before city generation without adding rendered vertices.
+
+Remove matching OSM building IDs and buildings intersecting the enlarged `displayBounds` from both rendering modes to prevent overlap. Continue to use `exclude.bounds` when identifying the original geographic footprint. `labelY` is the actual top of the displayed model plus 40 scene metres.
+
+| Place | Display X interval | Display Z interval | Display Y interval | Label Y |
+|---|---|---|---|---|
+| Miramar | 0.183–800.183 | 1495.298–2107.798 | -8–500.149 | 540.149 |
+| Grand Hotel | -3413.312–-1824.001 | 434.323–1871.675 | -8–595.250 | 635.250 |
 
 - Miramar: exclude building way **155816458**. Its mapped geographic bounds are longitude 121.5566439–121.5582749, latitude 25.082784–25.0837817. The module includes an approximate mall volume because the wheel must stand on a roof.
 - Grand Hotel: exclude main building way **25202548** only. Its mapped bounds are longitude 121.5256799–121.5269049, latitude 25.0781821–25.0790551. Hotel area way 557039975 and site relation 7659663 are supporting location references; surrounding buildings remain separate.
@@ -38,4 +47,4 @@ OSM geographic references retain the project's existing OpenStreetMap contributo
 
 ## Verification
 
-`node --test tests/landmarks.test.cjs` exercises the actual renderer mesh. It checks finite coordinates, normalized normals, bounded mesh cost, mapped geographic extents, day/night material presence, 48 independent glazed cabins, rooftop clearance, fourteen balcony light levels, roof coverage and upward lighting normals. The output is approximately 95,850 vertices / 31,950 triangles. Integration was checked in the full scene through the dedicated landmark presets, day/night switching and the shared 2D adapter. Real-device iPhone Safari validation remains outstanding.
+`node --test tests/landmarks.test.cjs` exercises the actual renderer mesh. Six tests check finite coordinates, normalized normals, bounded mesh cost, fixed geographic anchors, exact 5× scaling of every rendered vertex against native geometry, unchanged normals/materials/UVs, actual display bounds and label clearance. Architectural checks also cover 48 independent glazed cabins, rooftop clearance, fourteen balcony light levels, roof coverage, upward lighting normals and entrance/wing roof placement. The output remains 95,850 vertices / 31,950 triangles. Earlier A1 integration was checked in the full scene through the landmark presets, day/night switching and the shared 2D adapter; B1's enlarged models still require the parent's scene integration review. Real-device iPhone Safari validation remains outstanding.

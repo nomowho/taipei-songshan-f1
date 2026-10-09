@@ -2,7 +2,7 @@
 
 **非官方概念設計 / UNOFFICIAL CONCEPT**。並非真實賽事，未宣稱 Formula 1 官方授權或 FIA 認證。
 
-沿用既有自製 WebGL 場景，無需安裝套件，無外部 JavaScript 或素材請求。保留旋轉、平移、縮放、七個視角（全區、維修區、西側、東側、河岸、美麗華、圓山飯店）、日夜切換、建築／地標切換、自動環繞與同步賽道小地圖。
+沿用既有自製 WebGL 場景，無需安裝套件，無外部 JavaScript 或素材請求。保留旋轉、平移、縮放、全區／維修區視角與車載一圈、日夜切換、建築／地標切換、自動環繞與同步賽道小地圖。
 
 材質更新：住宅磁磚、玻璃帷幕、屋頂設備、金屬板、瀝青、水泥鋪面、樹冠與動態水面。`materials.js` 在本機產生原創貼圖並處理光照／投影；部署時須與 `index.html` 一起上傳。詳見 `docs/MATERIAL_UPGRADE.md`。
 
@@ -10,14 +10,16 @@
 
 最新地圖版：以 OpenStreetMap 實際道路與建物輪廓取代方格街廓，高度優先採用已知高度／樓層；屋頂改為無線條金屬反光，新增品牌文字看板及旗幟。必須一併部署 `city.js` 與 `data/taipei-map.js`；來源、ODbL 授權及估算範圍見 [MAP_SOURCES.md](docs/MAP_SOURCES.md)。
 
-最新 A1 配置：5.733 km、17 彎、R20 m 東端髮夾、北側河岸 S 彎、西側技術區、492 m 維修道、11 車隊＋1 預備庫。新增美麗華摩天輪、圓山大飯店、可放大的 Sector 小地圖與 3D 車載一圈。詳見 [A1_RELEASE.md](docs/A1_RELEASE.md)。
+前版 A1 配置：5.733 km、17 彎、R20 m 東端髮夾、北側河岸 S 彎、西側技術區、492 m 維修道、11 車隊＋1 預備庫。新增美麗華摩天輪、圓山大飯店、可放大的 Sector 小地圖與 3D 車載一圈。詳見 [A1_RELEASE.md](docs/A1_RELEASE.md)。
 
-部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
+最新 B1 更新：主畫面單指平移切換、地標 5 倍、路寬 2 倍、更蜿蜒的 5.896 km 賽道、6 座看台與 4 處草坡；清除北側至河岸建物及航廈勤務小車。詳見 [B1_RELEASE.md](docs/B1_RELEASE.md)。
+
+部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
 
 ## 操作
 
 - 本機：`python -m http.server 8000`，開啟 `http://localhost:8000/`。
-- 左鍵／單指拖曳旋轉；右鍵或 Shift 拖曳／雙指拖曳平移。
+- 開啟「平移」可用左鍵／單指拖曳平移，關閉後恢復旋轉；右鍵或 Shift 拖曳／雙指拖曳平移。
 - 滾輪／雙指開合／加減按鈕縮放。
 - WebGL 模式方向鍵旋轉、`+` / `-` 縮放、`0` 重設。
 - WebGL 不可用時進入 2D 備援；也可在網址加上 `?renderer=2d`。

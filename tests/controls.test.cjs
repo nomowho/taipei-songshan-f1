@@ -5,7 +5,7 @@ const vm=require('node:vm');
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const html=readFileSync(join(__dirname,'../index.html'),'utf8');
-function controls(fallback=false){
+function controls(fallback=false,dragMode='rotate'){
   const events={};
   const C={setPointerCapture(){},addEventListener(k,f){events[k]=f}};
   const goal={az:0,el:1,dist:1000,tx:0,tz:0};
@@ -13,7 +13,7 @@ function controls(fallback=false){
   const button={classList:{remove(){},toggle(){}},setAttribute(){}};
   const env={C,goal,g,Map,Math,cos:Math.cos,sin:Math.sin,cw:1000,ch:1000,w:1000,h:1000,
     clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),cl:(x,a,b)=>Math.max(a,Math.min(b,x)),
-    autospin:false,auto:false,updateButton(){},applyPreset(){},stopOnboard(){},document:{getElementById:()=>button},$:()=>button,
+    dragMode,autospin:false,auto:false,updateButton(){},applyPreset(){},stopOnboard(){},document:{getElementById:()=>button},$:()=>button,
     window:{addEventListener(k,f){events[k]=f}},};
   const start=fallback?html.indexOf('let pointers=new Map();'):html.indexOf('const pointers=new Map();');
   const end=html.indexOf(fallback?'let proj;function render()':'const racingMeshes=',start);
@@ -45,4 +45,19 @@ test('keyboard zoom has bounds and immediately responds after repeated zooming',
  const c=controls();for(let i=0;i<100;i++)c.event('keydown',0,0,0,{key:'-'});
  assert.ok(c.state.dist<=9000);c.event('keydown',0,0,0,{key:'+'});assert.ok(c.state.dist<9000);
  for(let i=0;i<100;i++)c.event('keydown',0,0,0,{key:'+'});assert.ok(c.state.dist>=190);
+});
+
+for(const fallback of [false,true])test(`${fallback?'2D':'3D'}: single-finger pan mode translates without rotating or zooming`,()=>{
+ const c=controls(fallback,'pan'),before={...c.state};c.event('pointerdown',1,100,100);c.event('pointermove',1,150,125);
+ assert.notEqual(c.state.tx,before.tx);assert.notEqual(c.state.tz,before.tz);assert.equal(c.state.az,before.az);assert.equal(c.state.el,before.el);assert.equal(c.state[fallback?'d':'dist'],before[fallback?'d':'dist']);
+});
+
+test('2D fallback skips unchanged geometry but redraws after view, mode or viewport changes',()=>{
+ const start=html.indexOf("let lastFallbackFrame='';let proj;function render()"),end=html.indexOf("$('onboard').disabled",start);assert.ok(start>=0&&end>start);
+ let fills=0;const context={setTransform(){},createLinearGradient(){return{addColorStop(){}}},fillRect(){fills++}};
+ const camera={az:2,el:1,d:4000,tx:0,tz:0,ty:0};
+ const env={Math,cos:Math.cos,sin:Math.sin,PI:Math.PI,w:1000,h:800,innerWidth:1000,innerHeight:800,devicePixelRatio:1,auto:false,isNight:true,withBuildings:true,withLabels:true,ca:{...camera},g:{...camera},C:{width:1000,height:800,style:{}},ctx:context,shapes:[],cityShapes:[],CircuitLayout:{drawMap(){}},document:{querySelectorAll:()=>[]},$:()=>({style:{}}),requestAnimationFrame(){}};
+ vm.runInNewContext(html.slice(start,end)+';this.tick=render;',env);
+ env.tick();assert.equal(fills,1);env.tick();assert.equal(fills,1,'static fallback does not sort/draw the same scene every frame');
+ env.isNight=false;env.tick();assert.equal(fills,2);env.g.tx=10;env.tick();assert.equal(fills,3);env.innerWidth=700;env.tick();assert.equal(fills,4);
 });
