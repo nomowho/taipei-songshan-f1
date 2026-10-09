@@ -29,3 +29,11 @@
 - 實體 iPhone Safari 殘影與效能仍需真機驗證。公開部署另以 Pages 建置狀態與匿名 HTTP／瀏覽器確認。
 
 部署須包含新增的 `circuit-spectators.js`，與其餘根目錄 JavaScript 及 `data/taipei-map.js` 一同發布。
+
+## 公開部署驗證
+
+- 功能 commit：`93fefeec850e51f6bd9fe4fd15664ea7b2f68e61`，GitHub Pages 回報 `built`。
+- 公開網址：https://nomowho.github.io/taipei-songshan-f1/
+- 匿名 HTTP 驗證 10 個網站檔案皆 200，內容逐一與 Git commit 相同。
+- 公開 Chromium 桌面成功顯示 LIVE 3D，維修區／全區視角可切換；行動模擬器的單指觸控平移確實改變場景位置，且羅盤方向保持不變。兩種環境無 JavaScript 錯誤。
+- Chromium 觸控模擬不能取代 iPhone Safari 真機效能／殘影驗證。
