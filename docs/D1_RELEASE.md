@@ -15,7 +15,7 @@
 
 `node --test --test-concurrency=1 tests/*.test.cjs`：60／60 通過。獨立審查指出的舊看台殘留與飛機起落架埋入地坪問題已修正，限定範圍複查通過，沒有未處理的 P1／P2。
 
-公開部署結果於完成驗證後補記。
+公開部署已驗證：[GitHub Pages](https://nomowho.github.io/taipei-songshan-f1/)。功能 commit `a9a5adb38326973e710f61be30ea58447a199c06` 的 Pages 狀態為 `built`；12 個執行期資源均回傳 HTTP 200，內容與 Git 提交逐位元相同。公開頁面顯示 LIVE 3D、545 M 維修道；維修區視角及縮放正常，未發現 JavaScript 錯誤。
 
 ## 限制
 
