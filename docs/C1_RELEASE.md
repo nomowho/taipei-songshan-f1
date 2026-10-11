@@ -23,6 +23,14 @@
 - `node --test tests/*.test.cjs`：**50／50 通過**。
 - 涵蓋路線閉合／自交、寬度平滑、河面及航廈淨距、完整場景低位物件淨距、起跑燈與工作人員、長道路裁切及 3D／2D 一致性、材質與觸控控制。
 - 獨立程式審查沒有 P1／P2 問題；提出的草地覆蓋水面問題已修正並新增完整河面相交測試。
-- 已執行 Chromium 桌面 3D、2D 備援與 320／360／390 px 版面、平移切換、日夜與視角操作；公開部署驗證於發布後補記。
+- 已執行 Chromium 桌面 3D、2D 備援與 320／360／390 px 版面、平移切換、日夜與視角操作；公開部署另見下列紀錄。
 
 部署須包含新模組 `circuit-event.js` 及所有既有根目錄 JavaScript 與 data/taipei-map.js。
+
+## 公開部署驗證 — 2026-10-11
+
+- 功能 commit：`4d6463092883ecbdea43079a967db59bfda41733`；GitHub Pages 狀態 `built`。
+- 公開網址：https://nomowho.github.io/taipei-songshan-f1/
+- 11 個網站檔案匿名 HTTP 200，逐一比對 Git 提交內容一致，包含新 circuit-event.js。
+- 公開 Chromium 顯示 LIVE 3D、7.411 KM、三個視角按鈕；單指觸控平移改變場景位置且保持羅盤方向，桌面維修區／全區切換可用，沒有 JavaScript 錯誤。
+- 以上為 Chromium 及觸控模擬結果，不等同實體 iPhone Safari 測試。
