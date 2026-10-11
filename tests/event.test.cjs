@@ -16,3 +16,12 @@ test('both render adapters receive finite geometry within event triangle budget'
  const mesh={box(...args){assert.ok(args.slice(0,6).every(Number.isFinite));assert.ok(args.slice(3,6).every(v=>v>0));triangles+=10;},flatrect(...args){assert.ok(args.slice(0,5).every(Number.isFinite));triangles+=2;},quad(...args){assert.ok(args.slice(0,4).flat().every(Number.isFinite));triangles+=2;},tri(...args){assert.ok(args.slice(0,3).flat().every(Number.isFinite));triangles++;if(args[3]==='#ff202b')red++;}};
  const p=E.build(mesh,mesh,mesh);assert.equal(p.staff.length,E.plan().staff.length);assert.equal(red,100);assert.ok(triangles<10000,`${triangles} triangles`);
 });
+
+
+test('D1 gantry front and rear glyphs read left to right from their own view',()=>{
+ const g=E.plan().gantry,faces={west:[],east:[]};const mesh={box(){},flatrect(){},tri(){},quad(a,b,c,d,color){if(color==='#f4f4eb'&&a[1]>=26.5){faces[a[0]<g.x?'west':'east'].push([a,b,c,d]);}}};
+ E.build(mesh,mesh,mesh);assert.equal(faces.west.length,faces.east.length);assert.ok(faces.west.length>40);
+ // The renderer's screen-right vector is -Z for a west camera, +Z for east.
+ for(const [face,sign] of [['west',-1],['east',1]]){const first=faces[face][0],last=faces[face].at(-1);assert.ok(sign*first[0][2]<sign*last[0][2]);}
+ for(let i=0;i<faces.west.length;i++)for(let k=0;k<4;k++)assert.ok(Math.abs(faces.west[i][k][2]+faces.east[i][k][2]-2*g.z)<1e-9);
+});

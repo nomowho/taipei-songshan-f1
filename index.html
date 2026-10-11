@@ -46,15 +46,16 @@ body[data-drag-mode="pan"] #view{cursor:move}#panMode{touch-action:manipulation}
 <div class="right"><button class="mode-btn" id="panMode" aria-label="切換單指平移" aria-pressed="false">✥ 平移</button><button class="mode-btn on" id="night">◐ 夜景</button><button class="mode-btn on" id="buildings">▥ 建築</button><button class="mode-btn on" id="labels">⌁ 地標</button><button class="mode-btn" id="auto">↻ 環繞</button><div style="display:flex;gap:6px"><button class="mode-btn" id="zoomIn" aria-label="放大">＋</button><button class="mode-btn" id="zoomOut" aria-label="縮小">－</button></div><div class="legend"><span id="gestureHint">滑鼠左鍵／單指：旋轉</span><br>右鍵／雙指移動：平移 · 滾輪／雙指開合：縮放</div></div>
 <div class="bar" id="bar"><button data-preset="overview" class="active">◈ 全區俯瞰</button><button data-preset="pits">▰ 維修區</button><button id="onboard" aria-pressed="false">▸ 車載一圈</button></div><div class="bottomnote">概念賽道改建 · 非 FIA 認證 · 品牌展示非贊助關係</div><div id="rendererStatus" role="status"></div><div id="error" role="alert"><p id="errorText">無法啟動繪圖功能，請使用 Chrome、Edge 或 Safari。</p><button id="retry" class="mode-btn">重新載入</button></div>
 <script src="./data/taipei-map.js?v=20261009"></script>
-<script src="./city.js?v=20261010-c1"></script>
-<script src="./teams.js?v=20261010-c1"></script>
-<script src="./paddock.js?v=20261010-c1"></script>
-<script src="./circuit.js?v=20261010-c1"></script>
-<script src="./circuit-scene.js?v=20261010-c1"></script>
-<script src="./circuit-spectators.js?v=20261010-c1"></script>
-<script src="./circuit-event.js?v=20261010-c1"></script>
-<script src="./landmarks.js?v=20261010-c1"></script>
-<script src="./materials.js?v=20261010-c1"></script>
+<script src="./city.js?v=20261011-d1"></script>
+<script src="./teams.js?v=20261011-d1"></script>
+<script src="./paddock.js?v=20261011-d1"></script>
+<script src="./circuit.js?v=20261011-d1"></script>
+<script src="./circuit-scene.js?v=20261011-d1"></script>
+<script src="./circuit-spectators.js?v=20261011-d1"></script>
+<script src="./circuit-life.js?v=20261011-d1"></script>
+<script src="./circuit-event.js?v=20261011-d1"></script>
+<script src="./landmarks.js?v=20261011-d1"></script>
+<script src="./materials.js?v=20261011-d1"></script>
 <script>
 (()=>{'use strict';
 document.getElementById('retry').onclick=()=>location.reload();
@@ -90,9 +91,9 @@ for(const [name,id] of [['miramar','miramarTag'],['grandHotel','hotelTag']]){con
 function fallback2D(C){document.getElementById('rendererStatus').textContent='2D 備援模式 · 可旋轉與縮放';document.getElementById('mapMode').textContent='2D MODE';
  const ctx=C.getContext('2d');if(!ctx){document.getElementById('error').style.display='block';return}let isNight=true,withBuildings=true,withLabels=true,auto=false;const initialView=CircuitLayout.presets.overview;let ca={az:initialView.az,el:initialView.el,d:initialView.dist,tx:initialView.tx,tz:initialView.tz,ty:initialView.ty},g={...ca};const sin=Math.sin,cos=Math.cos,PI=Math.PI,cl=(x,a,b)=>Math.max(a,Math.min(b,x));let shapes=[],cityShapes=[],route=[],routeLength=0,seed=31277;function rnd(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}
  const a=CircuitLayout.anchors;route=CircuitLayout.track;routeLength=CircuitLayout.length;
- function poly(points,color,category='object',type=0){(category==='city'?cityShapes:shapes).push({p:points,c:color,type,layer:category==='surface'?1:points.every(p=>p[1]<=-7)?0:2,groundY:points.reduce((n,p)=>n+p[1],0)/points.length})}function rect(x,z,w,d,y,c){poly([[x-w/2,y,z-d/2],[x+w/2,y,z-d/2],[x+w/2,y,z+d/2],[x-w/2,y,z+d/2]],c)}function box(x,z,w,d,h,y,color,category='object'){let xa=x-w/2,xb=x+w/2,za=z-d/2,zb=z+d/2;let p=(x,y,z)=>[x,y,z];let t=y+h;let faces=[[[p(xa,y,za),p(xb,y,za),p(xb,t,za),p(xa,t,za)],'#425060'],[[p(xb,y,zb),p(xa,y,zb),p(xa,t,zb),p(xb,t,zb)],'#516170'],[[p(xb,y,za),p(xb,y,zb),p(xb,t,zb),p(xb,t,za)],'#677580'],[[p(xa,y,zb),p(xa,y,za),p(xa,t,za),p(xa,t,zb)],'#465564'],[[p(xa,t,za),p(xb,t,za),p(xb,t,zb),p(xa,t,zb)],color]];for(let f of faces)poly(f[0],f[1],category)}
+ function poly(points,color,category='object',type=0){(category==='city'?cityShapes:shapes).push({p:points,c:color,type,layer:category==='surface'?1:points.every(p=>p[1]<=-7)?0:2,groundY:points.reduce((n,p)=>n+p[1],0)/points.length})}function rect(x,z,w,d,y,c,category='object'){poly([[x-w/2,y,z-d/2],[x+w/2,y,z-d/2],[x+w/2,y,z+d/2],[x-w/2,y,z+d/2]],c,category)}function box(x,z,w,d,h,y,color,category='object'){let xa=x-w/2,xb=x+w/2,za=z-d/2,zb=z+d/2;let p=(x,y,z)=>[x,y,z];let t=y+h;let faces=[[[p(xa,y,za),p(xb,y,za),p(xb,t,za),p(xa,t,za)],'#425060'],[[p(xb,y,zb),p(xa,y,zb),p(xa,t,zb),p(xb,t,zb)],'#516170'],[[p(xb,y,za),p(xb,y,zb),p(xb,t,zb),p(xb,t,za)],'#677580'],[[p(xa,y,zb),p(xa,y,za),p(xa,t,za),p(xa,t,zb)],'#465564'],[[p(xa,t,za),p(xb,t,za),p(xb,t,zb),p(xa,t,zb)],color]];for(let f of faces)poly(f[0],f[1],category)}
  function strip(P,w,y,col){for(let i=0;i<P.length;i++){let q=P[i],r=P[(i+1)%P.length],dx=r[0]-q[0],dz=r[1]-q[1],l=Math.hypot(dx,dz)||1,nx=-dz/l*w*.5,nz=dx/l*w*.5;poly([[q[0]-nx,y,q[1]-nz],[q[0]+nx,y,q[1]+nz],[r[0]+nx,y,r[1]+nz],[r[0]-nx,y,r[1]-nz]],col)}}
- rect(0,-900,9600,10300,-22,'#26333d');rect(0,-60,2910,850,-13,'#455d4d');rect(-440,-290,1250,230,-7,'#798287');rect(780,-290,780,230,-7,'#616c70');
+ rect(0,-900,9600,10300,-22,'#26333d');rect(0,-60,2910,850,-13,'#455d4d');rect(-440,-292,1220,255,-3,'#798287','surface');rect(860,-295,800,196,-4,'#616c70','surface');
  CircuitCity.fallback(TaipeiMapData,poly,strip);
  // Taipei 101 in geographic southeast side of Songshan airfield
  box(1206,-3867,99,99,80,-10,'#4c8996','city');for(let i=0;i<8;i++)box(1206,-3867,80-i*4,80-i*4,53,70+i*53,'#75bbc5','city');box(1206,-3867,12,12,65,490,'#c7e3e8','city');
@@ -108,7 +109,7 @@ function fallback2D(C){document.getElementById('rendererStatus').textContent='2D
  for(const car of parkedCars){const S=VEHICLE_SCALE;function carBox(dx,dz,w,d,h,y,color){box(car.x-dz*S,car.z+dx*S,w*S,d*S,h*S,2.3+(y-2.3)*S,color)}carBox(0,0,1.7,6.4,1.2,2.3,car.color);carBox(2.8,0,2.8,.5,.4,2.6,'#1a2530');carBox(-2.8,0,2.8,.5,.4,3.2,car.color);for(const dx of [-1.9,1.9])for(const dz of [-1,1])carBox(dx,dz,.55,1,1,2.4,'#15191e');}
  for(const shape of shapes.slice(pitShapeStart))shape.p=shape.p.map(p=>[pitWingX(p[0])+CircuitLayout.paddockOffset.x,p[1],p[2]+CircuitLayout.paddockOffset.z])
 // Grandstands and roofs
- for(let q of [[1215,-65,250,50],[-850,-455,260,40],[995,-450,290,40]]){box(q[0],q[1],q[2],q[3],26,-10,'#6e8494');box(q[0],q[1]-6,q[2]+15,q[3]+16,3,24,'#afc2c6')}
+ // Spectator stands use the sole shared CircuitSpectators geometry below.
  // Same physical track and landmark meshes, adapted to the polygon renderer.
  function adapter(category='object'){
   const mesh={arr:[],tri:(a,b,c,color,type)=>poly([a,b,c],color,category,type),quad:(a,b,c,d,color,type)=>poly([a,b,c,d],color,category,type),box:(x,y,z,w,h,d,color,type)=>box(x,z,w,d,h,y,color,category),flatrect:(x,z,w,d,y,color,type)=>poly([[x-w/2,y,z-d/2],[x+w/2,y,z-d/2],[x+w/2,y,z+d/2],[x-w/2,y,z+d/2]],color,category,type)};
@@ -116,7 +117,7 @@ function fallback2D(C){document.getElementById('rendererStatus').textContent='2D
   mesh.cylinder=(x,z,r,h,y,color,N=8)=>{for(let i=0;i<N;i++){const aa=i/N*PI*2,bb=(i+1)/N*PI*2,a=[x+cos(aa)*r,y,z+sin(aa)*r],b=[x+cos(bb)*r,y,z+sin(bb)*r],c=[b[0],y+h,b[2]],d=[a[0],y+h,a[2]];mesh.quad(a,b,c,d,color);mesh.tri([x,y+h,z],d,c,color)}};
   return mesh;
  }
- CircuitScene.build(adapter('surface'),adapter(),adapter());CircuitSpectators.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitEvent.build(adapter('surface'),adapter(),adapter());CircuitLandmarks.build(adapter('city'));
+ CircuitScene.build(adapter('surface'),adapter(),adapter());CircuitSpectators.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitEvent.build(adapter('surface'),adapter(),adapter());CircuitLife.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitLandmarks.build(adapter('city'));
  let F=0, nowT=performance.now(),w=innerWidth,h=innerHeight;const $=id=>document.getElementById(id);
  function focus(name){const p=CircuitLayout.presets[name==='reset'?'overview':name];if(!p)return;stopOnboard();Object.assign(g,{az:p.az,el:p.el,d:p.dist,tx:p.tx,tz:p.tz,ty:p.ty});$('eyebrow').textContent=p.eyebrow;$('focusName').textContent=p.title;$('focusDesc').textContent=p.desc;document.querySelectorAll('[data-preset]').forEach(x=>x.classList.toggle('active',x.dataset.preset===name));}
  document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{auto=false;$('auto').classList.remove('on');focus(b.dataset.preset)});$('night').onclick=()=>{isNight=!isNight;$('night').classList.toggle('on',isNight);$('night').textContent=isNight?'◐ 夜景':'☀ 日景'};$('buildings').onclick=()=>{withBuildings=!withBuildings;$('buildings').classList.toggle('on',withBuildings)};$('labels').onclick=()=>{withLabels=!withLabels;$('labels').classList.toggle('on',withLabels)};$('auto').onclick=()=>{auto=!auto;$('auto').classList.toggle('on',auto)};$('zoomIn').onclick=()=>g.d=cl(g.d*.75,170,11000);$('zoomOut').onclick=()=>g.d=cl(g.d*1.3,170,11000);
@@ -168,8 +169,7 @@ for(let i=0;i<12;i++){const x=-267+i*28;objects.box(x,0,-8.5,25,10,1,'#16232b',8
 objects.box(-475,0,7,340,11,1,'#83aeb9',13);objects.box(307,0,7,440,11,1,'#83aeb9',13);
 });
 // Start lights and race gantry are built by CircuitEvent.
-function grandstand(x,z,w,d,h,clr){objects.box(x,-1,z,w,Math.max(4,h*.45),d,'#4c5867');for(let i=0;i<5;i++){let u=i/5;objects.box(x,-1+h*.38+i*3,z+d*.32-i*d*.12,w,1.0,d*.70-i*d*.075,i%2===0?'#8e9caa':'#b7c4c7')}objects.box(x,h+10,z-7,w+10,3,d+13,clr,8);for(let a=-w/2+16;a<w/2;a+=55){objects.box(x+a,0,z+d/2-2,2,h+12,2,'#bccbd2')}}
-grandstand(1215,-65,250,50,17,'#859bab');grandstand(-1120,-395,260,42,17,'#778b9b');grandstand(1015,-458,290,40,17,'#7d94a2');
+// All spectator stands are built by CircuitSpectators below.
 // Obsolete hospitality blocks cleared for the terminal-side return.
 // Brand names are concept scenery, not sponsorship of this fictional event.
 function brandPanel(x,y,z,w,h,brand,flag=false){
@@ -185,7 +185,7 @@ for(const [i,x,z] of [[0,-1150,340],[1,1260,-145],[2,730,-337],[3,-1070,-365],[4
 for(let i=0;i<12;i++){const x=-720+i*120;if(sceneryClear(x,-160,100,2))brandPanel(x,3,-160,100,9,i%3);}
 for(let i=0;i<15;i++){const x=-700+i*95,z=342;if(!sceneryClear(x+10,z,20,3))continue;objects.cylinder(x,z,.6,37,0,'#b3c4ca',8);brandPanel(x+10,14,z,19,23,i%3,true);}
 // A1 track, curbs, short pit, grid and local safety spaces.
-CircuitScene.build(base,objects,emissive);CircuitSpectators.build(base,objects,emissive,TaipeiMapData);CircuitEvent.build(base,objects,emissive);
+CircuitScene.build(base,objects,emissive);CircuitSpectators.build(base,objects,emissive,TaipeiMapData);CircuitEvent.build(base,objects,emissive);CircuitLife.build(base,objects,emissive,TaipeiMapData);
 // Apron parking service lights, tire walls & planted trees
 for(let x=-1250;x<=1250;x+=89){for(let z of [-460,343]){if(!sceneryClear(x,z,3,3))continue;let h=16+rnd()*4;objects.box(x,-1,z,1,h,1,'#a4b6c0');emissive.box(x,h,z,3,1,3,'#a6dce4')}}
 function tree(x,z,h){objects.cylinder(x,z,1.2,h*.58,-6,'#70634e',7);objects.crown(x,h*.60-6,z,h*.36,h*.48,h*.37,'#4e7050');objects.crown(x+h*.20,h*.53-6,z-h*.13,h*.28,h*.35,h*.29,'#668358');}

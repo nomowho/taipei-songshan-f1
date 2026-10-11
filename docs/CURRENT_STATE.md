@@ -1,4 +1,6 @@
-> 2026-10-11 最新 C1 配置與起跑設施請以 [C1_RELEASE.md](C1_RELEASE.md) 為準。
+> 2026-10-11 最新 D1 場館、維修區與飛機船艇更新請以 [D1_RELEASE.md](D1_RELEASE.md) 為準。
+
+> 2026-10-11 C1 配置與起跑設施請以 [C1_RELEASE.md](C1_RELEASE.md) 為準。
 
 > 2026-10-09 最新 B1 操作、加寬賽道與觀賽空間更新請以 [B1_RELEASE.md](B1_RELEASE.md) 為準。
 

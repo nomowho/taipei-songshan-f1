@@ -16,7 +16,9 @@
 
 最新 C1 更新：依參考圖改為航廈側主直線及河岸彎道，7.411 km／22 彎、16.5–40 m 漸變路寬；新增起跑燈、20 面賽事字牌與166位工作人員，清除近岸道路。詳見 [C1_RELEASE.md](docs/C1_RELEASE.md)。
 
-部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`circuit-event.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
+最新 D1 更新：七座朝向賽道的看台（主看台長 520 公尺）、六座草坡與 80 棵樹、五架飛機與五艘船艇；維修區平順銜接、雙面 TAIPEI 起跑架。詳見 [D1_RELEASE.md](docs/D1_RELEASE.md)。
+
+部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`circuit-event.js`、`circuit-life.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
 
 ## 操作
 
