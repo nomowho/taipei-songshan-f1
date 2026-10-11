@@ -7,7 +7,7 @@ const mapContext={window:{}};vm.runInNewContext(readFileSync(join(__dirname,'../
 function build(){const api=require('../circuit-spectators.js'),base=env.createMesh(),objects=env.createMesh(),emissive=env.createMesh();return {api,result:api.build(base,objects,emissive,mapData),base,objects,emissive};}
 test('six grandstands and four spectator hills fit beside the actual racing surface',()=>{
  const {api,result}=build();assert.equal(result.sites.filter(s=>s.kind==='grandstand').length,6);assert.equal(result.sites.filter(s=>s.kind==='hill').length,4);
- for(const s of result.sites){assert.ok(s.clearance>=12,`${s.id} road clearance ${s.clearance}`);assert.ok(Math.abs(api.roadClearance(s.footprint)-s.clearance)<1e-8);assert.ok(s.riverClearance>=8);assert.ok(s.mapRoadClearance>=5);assert.ok(s.footprint.every(p=>p[1]<=650&&p[1]>-280));}
+ for(const s of result.sites){assert.ok(s.clearance>=12,`${s.id} road clearance ${s.clearance}`);assert.ok(Math.abs(api.roadClearance(s.footprint)-s.clearance)<1e-8);assert.ok(s.riverClearance>=8);assert.ok(s.mapRoadClearance>=5);assert.ok(s.footprint.every(p=>p[1]<=700&&p[1]>-280));}
 });
 test('spectator mesh uses finite outward/upward normals, green slopes, roofs and night lighting within budget',()=>{
  const {result,base,objects,emissive}=build(),meshes=[base,objects,emissive];let triangles=0;
@@ -24,12 +24,12 @@ test('the same spectator construction works with the polygon fallback adapter',(
 test('all spectator footprints clear retained OSM roads including elevated expressways',()=>{
  const {api,result}=build(),city=require('../city.js');
  for(const s of result.sites)for(const [id,name,kind,width,y,line] of mapData.roads)for(let i=1;i<line.length;i++){
-  const a=line[i-1],b=line[i];if(city.inConcept((a[0]+b[0])/2,(a[1]+b[1])/2))continue;
+  for(const [a,b] of city.roadSegments(mapData,line[i-1],line[i],width+3)){
   const length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(!length)continue;
   const nx=-(b[1]-a[1])/length*width/2,nz=(b[0]-a[0])/length*width/2;
   const road=[[a[0]+nx,a[1]+nz],[b[0]+nx,b[1]+nz],[b[0]-nx,b[1]-nz],[a[0]-nx,a[1]-nz]];
   assert.ok(api.polygonDistance(s.footprint,road)>=4.99999,`${s.id} intersects ${name} (${id}), elevation ${y}`);
- }
+ }}
 });
 test('road clearance includes long segment crossings and endpoint road width',()=>{
  const api=require('../circuit-spectators.js'),footprint=[[-2,-2],[2,-2],[2,2],[-2,2]];

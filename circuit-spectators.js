@@ -21,7 +21,7 @@ function polygonDistance(a,b){if(inside(a[0],b)||inside(b[0],a))return 0;let dis
 // The endpoint/midpoint maximum also covers local start-grid width transitions.
 function roadClearance(footprint,layout=L){let distance=Infinity;const P=layout.track;for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],mid=[(a[0]+b[0])/2,(a[1]+b[1])/2],half=Math.max(layout.widthAt(a),layout.widthAt(b),layout.widthAt(mid))/2;let d=inside(a,footprint)||inside(b,footprint)?0:Infinity;for(let j=0;j<footprint.length;j++)d=Math.min(d,segmentDistance(a,b,footprint[j],footprint[(j+1)%footprint.length]));distance=Math.min(distance,d-half);}return distance;}
 function riverClearance(footprint,data){let distance=Infinity;for(const line of data?data.rivers:[river])for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i];if(inside(a,footprint)||inside(b,footprint))return -117.5;for(let j=0;j<footprint.length;j++)distance=Math.min(distance,segmentDistance(a,b,footprint[j],footprint[(j+1)%footprint.length])-117.5);}return distance;}
-function retainedRoads(data){const segments=[];for(const [id,name,kind,width,y,line] of data?.roads||[])for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i];if(city.inConcept((a[0]+b[0])/2,(a[1]+b[1])/2))continue;segments.push({a,b,width,id,name,y});}return segments;}
+function retainedRoads(data){const segments=[];for(const [id,name,kind,width,y,line] of data?.roads||[])for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i];for(const [c,d] of city.roadSegments(data,a,b,width+3))segments.push({a:c,b:d,width,id,name,y});}return segments;}
 function streetClearance(footprint,data,segments=retainedRoads(data)){let distance=Infinity;
  const minX=Math.min(...footprint.map(p=>p[0])),maxX=Math.max(...footprint.map(p=>p[0])),minZ=Math.min(...footprint.map(p=>p[1])),maxZ=Math.max(...footprint.map(p=>p[1]));
  for(const {a,b,width} of segments){const boxDistance=Math.hypot(Math.max(0,minX-Math.max(a[0],b[0]),Math.min(a[0],b[0])-maxX),Math.max(0,minZ-Math.max(a[1],b[1]),Math.min(a[1],b[1])-maxZ));if(boxDistance-width/2>=distance)continue;
@@ -46,7 +46,7 @@ function plan(data){const sites=[],unplaced=[],streets=retainedRoads(data);for(c
  // Preferred sites are composed deliberately; nearby alternatives handle route edits.
  const offsets=[[0,0]];for(const dz of [20,-20,40,-40,60,-60,80,100,140,180,220])for(const dx of [0,-30,30,-60,60,-100,100])offsets.push([dx,dz]);
  for(const [dx,dz] of offsets){const s={...proposal,x:proposal.x+dx,z:proposal.z+dz},footprint=rect(s.x,s.z,s.w+8,s.d+8);
-  if(footprint.some(p=>p[1]>650||p[1]<-195||p[0]<-1280||p[0]>1000))continue;
+  if(footprint.some(p=>p[1]>700||p[1]<-195||p[0]<-1450||p[0]>1380))continue;
   if(scene.runoffs.some(r=>polygonDistance(footprint,r.points)<8)||sites.some(other=>polygonDistance(footprint,other.footprint)<10))continue;
   const shoreClearance=riverClearance(footprint,data);if(shoreClearance<8)continue;
   const mapRoadClearance=streetClearance(footprint,data,streets);if(mapRoadClearance<5)continue;

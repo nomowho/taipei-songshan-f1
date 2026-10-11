@@ -1,3 +1,5 @@
+> 2026-10-11 最新 C1 配置與起跑設施請以 [C1_RELEASE.md](C1_RELEASE.md) 為準。
+
 > 2026-10-09 最新 B1 操作、加寬賽道與觀賽空間更新請以 [B1_RELEASE.md](B1_RELEASE.md) 為準。
 
 > 2026-10-09 A1 配置與地標更新請以 [A1_RELEASE.md](A1_RELEASE.md) 為準；以下為歷史交接紀錄。

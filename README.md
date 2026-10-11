@@ -12,9 +12,11 @@
 
 前版 A1 配置：5.733 km、17 彎、R20 m 東端髮夾、北側河岸 S 彎、西側技術區、492 m 維修道、11 車隊＋1 預備庫。新增美麗華摩天輪、圓山大飯店、可放大的 Sector 小地圖與 3D 車載一圈。詳見 [A1_RELEASE.md](docs/A1_RELEASE.md)。
 
-最新 B1 更新：主畫面單指平移切換、地標 5 倍、路寬 2 倍、更蜿蜒的 5.896 km 賽道、6 座看台與 4 處草坡；清除北側至河岸建物及航廈勤務小車。詳見 [B1_RELEASE.md](docs/B1_RELEASE.md)。
+前版 B1 更新：主畫面單指平移切換、地標 5 倍、路寬 2 倍、更蜿蜒的 5.896 km 賽道、6 座看台與 4 處草坡；清除北側至河岸建物及航廈勤務小車。詳見 [B1_RELEASE.md](docs/B1_RELEASE.md)。
 
-部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
+最新 C1 更新：依參考圖改為航廈側主直線及河岸彎道，7.411 km／22 彎、16.5–40 m 漸變路寬；新增起跑燈、20 面賽事字牌與166位工作人員，清除近岸道路。詳見 [C1_RELEASE.md](docs/C1_RELEASE.md)。
+
+部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`circuit-event.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
 
 ## 操作
 
