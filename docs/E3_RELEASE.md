@@ -11,4 +11,5 @@
 - 桌機瀏覽器相容模式＋390×844 畫面已操作旋轉、平移、縮放及日夜切換，沒有 console error，觀察中無黑色殘影。
 - 本環境無實體 iPhone Safari，尚未確認真機殘影消失；已詢問使用者殘影是否在停止手勢後仍存在。
 - 根據 [WebGL 規格](https://registry.khronos.org/webgl/specs/latest/1.0/)，preserveDrawingBuffer 預設為 false；場景本來就逐幀重繪，無須保留已呈現畫面。[WebKit 歷史問題](https://bugs.webkit.org/show_bug.cgi?id=159608) 僅作排查參考，不作為目前 iPhone 問題的證據。
-- 公開部署驗證待補。
+- Pages 已成功建置功能 commit `6b3fa137d6adc8284b17113e8864763b6affd8e8`。13 個公開資產 HTTP 200 且逐位元組符合提交內容。
+- 公開網址 https://nomowho.github.io/taipei-songshan-f1/?release=e3 已在瀏覽器確認 LIVE 3D、精簡資訊卡、日夜切換，無 console error。
