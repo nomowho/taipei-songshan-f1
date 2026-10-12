@@ -44,7 +44,7 @@ for(const fallback of [false,true]){
 test('keyboard zoom has bounds and immediately responds after repeated zooming',()=>{
  const c=controls();for(let i=0;i<100;i++)c.event('keydown',0,0,0,{key:'-'});
  assert.ok(c.state.dist<=9000);c.event('keydown',0,0,0,{key:'+'});assert.ok(c.state.dist<9000);
- for(let i=0;i<100;i++)c.event('keydown',0,0,0,{key:'+'});assert.ok(c.state.dist>=190);
+ for(let i=0;i<100;i++)c.event('keydown',0,0,0,{key:'+'});assert.equal(c.state.dist,95);
 });
 
 for(const fallback of [false,true])test(`${fallback?'2D':'3D'}: single-finger pan mode translates without rotating or zooming`,()=>{
@@ -61,3 +61,4 @@ test('2D fallback skips unchanged geometry but redraws after view, mode or viewp
  env.tick();assert.equal(fills,1);env.tick();assert.equal(fills,1,'static fallback does not sort/draw the same scene every frame');
  env.isNight=false;env.tick();assert.equal(fills,2);env.g.tx=10;env.tick();assert.equal(fills,3);env.innerWidth=700;env.tick();assert.equal(fills,4);env.g.tx=env.ca.tx;elapsed=250;env.tick();assert.equal(fills,5,'broadcast redraws at bounded four frames per second');env.tick();assert.equal(fills,5);
 });
+for(const fallback of [false,true])test(`${fallback?'2D':'3D'} wheel zoom reaches the new fifty-percent closer limit`,()=>{const c=controls(fallback);c.event('wheel',0,0,0,{deltaY:-1e8});assert.equal(c.state[fallback?'d':'dist'],fallback?85:95);c.event('wheel',0,0,0,{deltaY:100});assert.ok(c.state[fallback?'d':'dist']>(fallback?85:95));});

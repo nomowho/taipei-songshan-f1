@@ -23,7 +23,9 @@ function buildRoof(mesh){
    mesh.quad([a[0],a[1]-.48,a[2]+(side? .1:-.1)],[b[0],b[1]-.48,b[2]+(side?.1:-.1)],[b[0],b[1]-.05,b[2]+(side?.1:-.1)],[a[0],a[1]-.05,a[2]+(side?.1:-.1)],'#58d6e3',12);
    // Recessed curved glazing follows the underside of the continuous roof.
    const zOffset=side?-4:4;
-   mesh.quad([a[0],12,a[2]+zOffset],[b[0],12,b[2]+zOffset],[b[0],b[1]-2,b[2]+zOffset],[a[0],a[1]-2,a[2]+zOffset],'#80aebd',13,[[i*3,0],[(i+1)*3,0],[(i+1)*3,(b[1]-14)/3.5],[i*3,(a[1]-14)/3.5]]);
+   // The front ribbon is a display: glazing begins above it, not in front of it.
+   const sill=side?26:12;
+   mesh.quad([a[0],sill,a[2]+zOffset],[b[0],sill,b[2]+zOffset],[b[0],b[1]-2,b[2]+zOffset],[a[0],a[1]-2,a[2]+zOffset],'#80aebd',13,[[i*3,0],[(i+1)*3,0],[(i+1)*3,(b[1]-14)/3.5],[i*3,(a[1]-14)/3.5]]);
   }
  }
  for(const end of [0,1])for(let j=0;j<bands;j++){const a=roofPoint(end,j/bands),b=roofPoint(end,(j+1)/bands);mesh.quad([a[0],12,a[2]],[b[0],12,b[2]],b,a,'#80aebd',13);}
@@ -31,11 +33,11 @@ function buildRoof(mesh){
  for(let i=0;i<steps;i++)for(let j=0;j<bands;j++)for(const [u,v] of [[i/steps,j/bands],[(i+1)/steps,(j+1)/bands],[(i+1)/steps,j/bands],[i/steps,j/bands],[i/steps,(j+1)/bands],[(i+1)/steps,(j+1)/bands]])vertex(u,v,-1.8,true);
 }
 function buildScreens(mesh){
- const uv=[[.5/1024,.5/2048],[319.5/1024,.5/2048],[319.5/1024,127.5/2048],[.5/1024,127.5/2048]];
+ const uv=[[.5/1024,.5/2048],[1023.5/1024,.5/2048],[1023.5/1024,127.5/2048],[.5/1024,127.5/2048]];
  // From the +Z exterior, screen-right points toward -X in both cameras.
  function screen(x,y,z,w,h){mesh.quad([x+w/2,y,z],[x-w/2,y,z],[x-w/2,y+h,z],[x+w/2,y+h,z],'#ffffff',16,uv);}
  for(let i=0;i<12;i++)screen(-267+i*28,.4,-7.9,23,8.9);
- for(const x of [-215,-95,25])screen(x,13.5,8.15,110,11.8);
+ for(const [a,b] of [[-651,-302],[-298,-172],[-168,-42],[-38,88],[92,531]])screen((a+b)/2,12.4,7.8,b-a,13.2);
 }
 function createRaceCar(factory,team){
  const m=factory(),dark='#101820',col=team.color,accent=team.accent;

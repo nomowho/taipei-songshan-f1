@@ -1,3 +1,5 @@
+> 2026-10-12 E2 資訊屏、雙面看板與細節縮放請以 [E2_RELEASE.md](E2_RELEASE.md) 為準。
+
 > 2026-10-12 最新 E1 景觀與賽事設施更新請以 [E1_RELEASE.md](E1_RELEASE.md) 為準。
 
 > 2026-10-11 最新 D1 場館、維修區與飛機船艇更新請以 [D1_RELEASE.md](D1_RELEASE.md) 為準。
