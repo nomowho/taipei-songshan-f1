@@ -3,7 +3,7 @@ const materials=require('../materials.js');
 test('iPhone and touch iPad use the compatible framebuffer path',()=>{
  for(const device of [{userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0) AppleWebKit Safari',platform:'iPhone',maxTouchPoints:5},{userAgent:'Mozilla/5.0 Macintosh',platform:'MacIntel',maxTouchPoints:5}]){
   const p=materials.renderPolicy({...device,width:390,pixelRatio:3});
-  assert.equal(p.context.antialias,false);assert.equal(p.context.preserveDrawingBuffer,true);
+  assert.equal(p.context.antialias,false);assert.equal(p.context.preserveDrawingBuffer,false);
   assert.equal(p.shadows,false);assert.ok(p.dpr<=1.5);
  }
  const desktop=materials.renderPolicy({userAgent:'Chrome',platform:'Win32',maxTouchPoints:0,width:1440,pixelRatio:2});

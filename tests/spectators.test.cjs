@@ -79,9 +79,9 @@ test('E1 hills form one large rolling mass and every rendered cell has actual in
  const peaks=terrain.vertices.filter(v=>v.y>45&&terrain.vertices.every(w=>Math.hypot(v.x-w.x,v.z-w.z)>46||v.y>=w.y));assert.ok(peaks.length>=3,'multiple rendered hill crests');
  for(const v of terrain.vertices.filter(v=>v.count<4))assert.equal(v.y,-4.9,'seamless perimeter ground contact');
 });
-test('E1 six tree silhouettes are truly different and all crowns reach five times prior height',()=>{
+test('E1 six tree silhouettes are truly different and all crowns are half E1 height',()=>{
  const {result,objects}=build();
- for(const t of result.trees){assert.equal(t.h,t.baselineHeight*5);assert.ok(t.h>=60&&t.h<=120);const vertices=[];for(let i=0;i<objects.arr.length;i+=12)if(Math.abs(objects.arr[i]-t.x)<=t.r+.001&&Math.abs(objects.arr[i+2]-t.z)<=t.r+.001)vertices.push(objects.arr[i+1]);assert.ok(vertices.some(y=>Math.abs(y-(t.ground+t.h))<.001),t.id+' rendered tip');}
+ for(const t of result.trees){assert.equal(t.h,t.baselineHeight*2.5);assert.ok(t.h>=30&&t.h<=60);const vertices=[];for(let i=0;i<objects.arr.length;i+=12)if(Math.abs(objects.arr[i]-t.x)<=t.r+.001&&Math.abs(objects.arr[i+2]-t.z)<=t.r+.001)vertices.push(objects.arr[i+1]);assert.ok(vertices.some(y=>Math.abs(y-(t.ground+t.h))<.001),t.id+' rendered tip');}
  // Isolate mesh geometry per kind using a data-free controlled mesh build.
  const profiles=new Set();for(let kind=0;kind<6;kind++){const t=result.trees.find(t=>t.kind===kind);const levels=new Set();for(let i=0;i<objects.arr.length;i+=12)if(Math.abs(objects.arr[i]-t.x)<=t.r+.001&&Math.abs(objects.arr[i+2]-t.z)<=t.r+.001&&objects.arr[i+1]>=t.ground+t.h*.3)levels.add(((objects.arr[i+1]-t.ground)/t.h).toFixed(3));profiles.add([...levels].sort().join(','));}assert.equal(profiles.size,6);
  for(let i=0;i<result.trees.length;i++)for(let j=0;j<i;j++){const a=result.trees[i],b=result.trees[j];assert.ok(Math.hypot(a.x-b.x,a.z-b.z)>=a.r+b.r+2,'nonoverlapping crowns');}

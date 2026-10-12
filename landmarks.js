@@ -9,11 +9,11 @@ const places={
  grandHotel:place('圓山大飯店',121.5263883,25.0787252,[25202548],[121.5256799,25.0781821,121.5269049,25.0790551])
 };
 // All primitives pass through quad/tri: identical geometry in WebGL and Canvas2D.
-function localMesh(mesh,place,angle=0){
+function localMesh(mesh,place,angle=0,verticalOffset=0){
  const c=Math.cos(angle),s=Math.sin(angle),scale=place.displayScale||1;
  // Local nested roof offsets use scale=1; only the geographic place applies
  // the requested uniform display scale, about its x/z anchor and scene ground.
- const point=p=>[place.x+scale*(c*p[0]-s*p[2]),GROUND+scale*(p[1]-GROUND),place.z+scale*(s*p[0]+c*p[2])];
+ const point=p=>[place.x+scale*(c*p[0]-s*p[2]),GROUND+scale*(p[1]-GROUND+verticalOffset),place.z+scale*(s*p[0]+c*p[2])];
  const m={quad:(a,b,c,d,color,type=0)=>mesh.quad(point(a),point(b),point(c),point(d),color,type),tri:(a,b,c,color,type=0)=>mesh.tri(point(a),point(b),point(c),color,type)};
  m.box=function(x,y,z,w,h,d,color,type=0){const a=x-w/2,b=x+w/2,l=z-d/2,r=z+d/2,t=y+h;
   m.quad([a,y,l],[b,y,l],[b,t,l],[a,t,l],color,type);m.quad([b,y,r],[a,y,r],[a,t,r],[b,t,r],color,type);
@@ -82,14 +82,9 @@ function hipRoof(m,width,depth,eave,height){
  }
 }
 function grandHotel(mesh){
- const m=localMesh(mesh,places.grandHotel,-22*PI/180),red='#ac3025',stone='#c7b39a',base=32,floorHeight=4.5;
- // Terraced hillside is deliberately schematic; this is not imported terrain.
- for(const [w,d,y,h] of [[260,205,GROUND,14],[222,169,6,12],[186,127,18,10]]){
-  const a=[-w/2,y,8-d/2],b=[w/2,y,8-d/2],c=[w/2,y,8+d/2],e=[-w/2,y,8+d/2];
-  const aa=[-w/2+11,y+h,18-d/2],bb=[w/2-11,y+h,18-d/2],cc=[w/2-11,y+h,d/2-2],ee=[-w/2+11,y+h,d/2-2];
-  m.quad(a,b,bb,aa,'#6b7954');m.quad(b,c,cc,bb,'#64724f');m.quad(c,e,ee,cc,'#60704d');m.quad(e,a,aa,ee,'#71805a');m.quad(aa,bb,cc,ee,'#74815d');
- }
- m.box(0,28,0,158,4,85,stone);m.box(0,base,0,126,63,58,'#543e33');
+ const m=localMesh(mesh,places.grandHotel,-22*PI/180,-40),red='#ac3025',stone='#c7b39a',base=32,floorHeight=4.5;
+ // Keep only the architecture, seated directly on scene ground.
+ m.box(0,base,0,126,63,58,'#543e33');
  for(let f=0;f<14;f++){
   const y=base+f*floorHeight;
   m.box(0,y,0,137,.65,67,'#c5a589');
@@ -109,7 +104,7 @@ function grandHotel(mesh){
  // Broad entrance canopy, stone stair and smaller gold roofs on podium wings.
  m.box(0,32,-45,44,4.5,18,red);hipRoof(localMesh(m,{x:0,z:-45}),53,23,37,5.5);
  for(const x of [-77,77]){m.box(x,32,0,22,8,70,red);hipRoof(localMesh(m,{x,z:0}),29,78,40,6);}
- for(let j=0;j<10;j++)m.box(0,28+j*.4,-62+j*.9,53,.4,1.1,stone);
+
 }
 function build(mesh){miramar(mesh);grandHotel(mesh);return mesh;}
 // Measure the generated primitives once so clearance metadata is available

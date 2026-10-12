@@ -1,3 +1,5 @@
+> 2026-10-12 E3 樹高、圓山飯店、精簡資訊與 iOS 相容設定請以 [E3_RELEASE.md](E3_RELEASE.md) 為準。
+
 > 2026-10-12 E2 資訊屏、雙面看板與細節縮放請以 [E2_RELEASE.md](E2_RELEASE.md) 為準。
 
 > 2026-10-12 最新 E1 景觀與賽事設施更新請以 [E1_RELEASE.md](E1_RELEASE.md) 為準。

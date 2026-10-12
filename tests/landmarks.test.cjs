@@ -7,7 +7,7 @@ vm.runInNewContext(html.slice(html.indexOf('function createMesh()'),html.indexOf
 function build(){const file=join(__dirname,'../landmarks.js');assert.ok(require('node:fs').existsSync(file),'landmark builder must exist');const landmarks=require(file),mesh=env.createMesh();landmarks.build(mesh);const rendered=Array.from({length:mesh.arr.length/12},(_,i)=>mesh.arr.slice(i*12,i*12+12));
  // Existing architectural checks use native dimensions; the separate scale test
  // verifies every rendered vertex, including the mall, terraces and side roofs.
- const vertices=rendered.map(v=>{const p=v[0]>=0?landmarks.places.miramar:landmarks.places.grandHotel,s=p.displayScale||1;return [p.x+(v[0]-p.x)/s,-8+(v[1]+8)/s,p.z+(v[2]-p.z)/s,...v.slice(3)];});return {landmarks,vertices,rendered};}
+ const vertices=rendered.map(v=>{const p=v[0]>=0?landmarks.places.miramar:landmarks.places.grandHotel,s=p.displayScale||1;return [p.x+(v[0]-p.x)/s,-8+(v[1]+8)/s+(v[0]<0?40:0),p.z+(v[2]-p.z)/s,...v.slice(3)];});return {landmarks,vertices,rendered};}
 function bounds(vertices){return [0,1,2].map(i=>[Math.min(...vertices.map(p=>p[i])),Math.max(...vertices.map(p=>p[i]))]);}
 test('both complete landmarks render at exactly five times native size about their geographic ground anchors',()=>{
  const {landmarks,rendered}=build();
@@ -71,4 +71,8 @@ test('entrance and side-wing roofs sit over their own podiums',()=>{
  });
  assert.ok(roofs.filter(v=>v[1]<-40&&Math.abs(v[0])<28).length>500,'entrance canopy is south of tower');
  for(const x of [-77,77])assert.ok(roofs.filter(v=>Math.abs(v[0]-x)<15).length>500,'wing roof aligns with wing');
+});
+test('E3 hotel contains architecture only and its lowest building vertices touch scene ground',()=>{
+ const {rendered,landmarks}=build(),hotel=rendered.filter(v=>v[0]<0);assert.equal(Math.min(...hotel.map(v=>v[1])),-8);assert.equal(landmarks.places.grandHotel.verticalBounds[0],-8);
+ const terraceColors=['6b7954','64724f','60704d','71805a','74815d'].map(h=>h.match(/../g).map(n=>parseInt(n,16)/255));assert.ok(!hotel.some(v=>terraceColors.some(c=>c.every((n,i)=>Math.abs(n-v[6+i])<1e-6))));
 });

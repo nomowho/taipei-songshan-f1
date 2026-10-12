@@ -3,7 +3,8 @@
 'use strict';
 function renderPolicy({userAgent='',platform='',maxTouchPoints=0,pixelRatio=1,width=1440,compatible=false}={}){
  const ios=compatible||/iP(hone|ad|od)/.test(userAgent)||(platform==='MacIntel'&&maxTouchPoints>1);
- return {ios,shadows:!ios,dpr:Math.min(width<700||ios?1.5:2,pixelRatio),context:{alpha:false,antialias:!ios,preserveDrawingBuffer:ios,powerPreference:'high-performance'}};
+ // Every frame is fully redrawn; retaining a presented frame is unnecessary on Safari.
+ return {ios,shadows:!ios,dpr:Math.min(width<700||ios?1.5:2,pixelRatio),context:{alpha:false,antialias:!ios,preserveDrawingBuffer:false,powerPreference:'high-performance'}};
 }
 function beginFrame(gl,width,height,color){
  // Restore the visible target and write masks before clearing the entire frame.
