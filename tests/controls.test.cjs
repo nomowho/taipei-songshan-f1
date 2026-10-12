@@ -54,10 +54,10 @@ for(const fallback of [false,true])test(`${fallback?'2D':'3D'}: single-finger pa
 
 test('2D fallback skips unchanged geometry but redraws after view, mode or viewport changes',()=>{
  const start=html.indexOf("let lastFallbackFrame='';let proj;function render()"),end=html.indexOf("$('onboard').disabled",start);assert.ok(start>=0&&end>start);
- let fills=0;const context={setTransform(){},createLinearGradient(){return{addColorStop(){}}},fillRect(){fills++}};
+ let elapsed=0;let fills=0;const context={setTransform(){},createLinearGradient(){return{addColorStop(){}}},fillRect(){fills++}};
  const camera={az:2,el:1,d:4000,tx:0,tz:0,ty:0};
- const env={Math,cos:Math.cos,sin:Math.sin,PI:Math.PI,w:1000,h:800,innerWidth:1000,innerHeight:800,devicePixelRatio:1,auto:false,isNight:true,withBuildings:true,withLabels:true,ca:{...camera},g:{...camera},C:{width:1000,height:800,style:{}},ctx:context,shapes:[],cityShapes:[],CircuitLayout:{drawMap(){}},document:{querySelectorAll:()=>[]},$:()=>({style:{}}),requestAnimationFrame(){}};
+ const env={broadcast:{update(){}},broadcastStarted:0,performance:{now:()=>elapsed},CircuitBroadcast:{INTERVAL:250},Math,cos:Math.cos,sin:Math.sin,PI:Math.PI,w:1000,h:800,innerWidth:1000,innerHeight:800,devicePixelRatio:1,auto:false,isNight:true,withBuildings:true,withLabels:true,ca:{...camera},g:{...camera},C:{width:1000,height:800,style:{}},ctx:context,shapes:[],cityShapes:[],CircuitLayout:{drawMap(){}},document:{querySelectorAll:()=>[]},$:()=>({style:{}}),requestAnimationFrame(){}};
  vm.runInNewContext(html.slice(start,end)+';this.tick=render;',env);
  env.tick();assert.equal(fills,1);env.tick();assert.equal(fills,1,'static fallback does not sort/draw the same scene every frame');
- env.isNight=false;env.tick();assert.equal(fills,2);env.g.tx=10;env.tick();assert.equal(fills,3);env.innerWidth=700;env.tick();assert.equal(fills,4);
+ env.isNight=false;env.tick();assert.equal(fills,2);env.g.tx=10;env.tick();assert.equal(fills,3);env.innerWidth=700;env.tick();assert.equal(fills,4);env.g.tx=env.ca.tx;elapsed=250;env.tick();assert.equal(fills,5,'broadcast redraws at bounded four frames per second');env.tick();assert.equal(fills,5);
 });

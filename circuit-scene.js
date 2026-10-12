@@ -3,11 +3,19 @@
 'use strict';
 const L=typeof module==='object'?require('./circuit.js'):root.CircuitLayout;
 const runoffs=[{kind:'asphalt',points:[[1640,-10],[1780,-10],[1780,190],[1640,190]]},{kind:'gravel',points:[[-1650,330],[-1510,330],[-1510,490],[-1650,490]]},{kind:'gravel',points:[[1240,-485],[1510,-485],[1510,-410],[1240,-410]]}];
+// Baked opening indices for the fixed E1 route; scoped tests validate actual clearance.
+const barrierOpenings=new Set([146,148,150,152,154,156,158,160,162,164,3744,3746,3748,3750,3752,3754,3756,3758,3760,3762,3764,3766,3768,3770,3772,3774,3776,3778,3780,3782,3784,3786,3788,3790,3792,3794,3796,3798,3800,3802,3804,3806,3808,3810,3812,3814,3816,3818,3820,3822,3824,3826,5408,5410,5412,5414,5416,5418,5420,5422,5424]);
+let barriers;
+function barrierPlan(){if(barriers)return barriers;barriers=[];const P=L.track,N=P.length;
+ const normal=P.map((p,i)=>{const a=P[(i-1+N)%N],b=P[(i+1)%N],d=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/d,(b[0]-a[0])/d]});
+ const pt=(i,s)=>[P[i][0]+normal[i][0]*s*(L.widthAt(P[i])/2+6),P[i][1]+normal[i][1]*s*(L.widthAt(P[i])/2+6)];
+ for(let i=0;i<N;i++)for(const side of [-1,1]){const a=pt(i,side),b=pt((i+1)%N,side),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(!barrierOpenings.has(i*2+(side===1?1:0)))barriers.push({points:[a,b],side,index:i,post:i%4===0});}return barriers;
+}
 function build(base,objects,emissive){
  const P=L.track,N=P.length,normal=P.map((p,i)=>{const a=P[(i-1+N)%N],b=P[(i+1)%N],d=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/d,(b[0]-a[0])/d]});
  function point(i,offset,y){i=(i+N)%N;return[P[i][0]+normal[i][0]*offset,y,P[i][1]+normal[i][1]*offset]}
  function ribbon(left,right,y,color,type,open=false){for(let i=0;i<N;i++){const j=(i+1)%N; if(open){const a=point(i,(left(i)+right(i))/2,y),b=point(j,(left(j)+right(j))/2,y);if([a,b,[(a[0]+b[0])/2,y,(a[2]+b[2])/2]].some(p=>L.pitClearance([p[0],p[2]])<2))continue;}const lo=k=>Math.min(left(k),right(k)),hi=k=>Math.max(left(k),right(k));base.quad(point(i,lo(i),y),point(j,lo(j),y),point(j,hi(j),y),point(i,hi(i),y),typeof color==='function'?color(i):color,type)}}
- const half=i=>L.widthAt(P[i])/2;
+ const widths=P.map(p=>L.widthAt(p)/2),half=i=>widths[i];
  for(const r of runoffs){const p=r.points.map(([x,z])=>[x,1.1,z]);base.quad(...p,r.kind==='gravel'?'#b3a583':'#666e73',r.kind==='gravel'?0:4);
   if(r.kind==='gravel')for(let x=Math.min(...r.points.map(p=>p[0]))+3;x<Math.max(...r.points.map(p=>p[0]));x+=11)for(let z=Math.min(...r.points.map(p=>p[1]))+3;z<Math.max(...r.points.map(p=>p[1]));z+=13)base.flatrect(x,z,2,3,1.13,'#948875',0);
  }
@@ -18,14 +26,11 @@ function build(base,objects,emissive){
   ribbon(i=>s*(half(i)+.1),i=>s*(half(i)+1.5),1.88,i=>Math.floor(L.distances[i]/4)%2?'#e8ebdf':'#db3a49',0,true);
   ribbon(i=>s*(half(i)+1.6),i=>s*(half(i)+1.9),1.9,'#4ec8d8',12,true);
  }
- // Posts intentionally omit the pit connections and the forward escape routes.
- let nextPost=0;
- for(let i=0;i<N;i++)if(L.distances[i]>=nextPost){nextPost+=21;for(const s of [-1,1]){
-  const p=point(i,s*(half(i)+7),0),x=p[0],z=p[2];
-  if(x>1600||x<-1480||z<-380)continue;
-  if(L.pitClearance([x,z])<3)continue;
-  objects.box(x,1.2,z,1.5,2.2,1.5,'#9caeb4',8);emissive.box(x,3.4,z,1.65,.35,1.65,'#59d5df',12);
- }}
+ // Connected rails and catch-fence cables follow both edges and leave escape gaps.
+ for(const r of barrierPlan()){const [a,b]=r.points,v=(p,y)=>[p[0],y,p[1]];
+  for(const y of [1.8,2.5])objects.quad(v(a,y),v(b,y),v(b,y+.35),v(a,y+.35),'#b2bdc0',8);
+  for(const y of [3.3,4.5,5.7])objects.quad(v(a,y),v(b,y),v(b,y+.055),v(a,y+.055),'#7c939b',8);
+  if(r.post){objects.box(a[0],1,a[1],.3,5,.3,'#a6b7be',8);objects.quad(v(a,2.9),v(b,5.7),v(b,5.77),v(a,2.97),'#6b838e',8);objects.quad(v(a,5.7),v(b,2.9),v(b,2.97),v(a,5.77),'#6b838e',8);}}
  // Outer boundaries of escape areas, with the track-facing side left open.
  function wall(a,b){const dx=b[0]-a[0],dz=b[1]-a[1],d=Math.hypot(dx,dz),nx=-dz/d*.6,nz=dx/d*.6;
   objects.quad([a[0],1,a[1]],[b[0],1,b[1]],[b[0],3,b[1]],[a[0],3,a[1]],'#bcc5c9',0);
@@ -45,5 +50,5 @@ function build(base,objects,emissive){
  objects.box(1050,0,-145,.7,7,.7,'#a4b5c1',8);emissive.box(1050,7,-145,2,1,1,'#80d9ed',12);
 
 }
-const api={build,runoffs};if(typeof module==='object')module.exports=api;else root.CircuitScene=api;
+const api={build,runoffs,barrierPlan};if(typeof module==='object')module.exports=api;else root.CircuitScene=api;
 })(typeof window==='object'?window:globalThis);

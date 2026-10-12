@@ -4,10 +4,11 @@
 const L=typeof module==='object'?require('./circuit.js'):root.CircuitLayout;
 const T=typeof module==='object'?require('./teams.js'):root.CircuitTeams;
 function distance(p,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dz);}
-function clearance(x,z){let d=Infinity;for(let i=0;i<L.track.length;i++){const a=L.track[i],b=L.track[(i+1)%L.track.length];d=Math.min(d,distance([x,z],a,b)-Math.max(L.widthAt(a),L.widthAt(b))/2);}for(let i=1;i<L.pit.length;i++)d=Math.min(d,distance([x,z],L.pit[i-1],L.pit[i])-6.5);return d;}
+function clearance(x,z){let d=L.roadClearance([x,z]);for(let i=1;i<L.pit.length;i++)d=Math.min(d,distance([x,z],L.pit[i-1],L.pit[i])-6.5);return d;}
 const river=[[1891,601],[1824,710],[1734,781],[1628,777],[1544,720],[1219,490],[1056,418],[849,430],[545,599],[376,666],[178,739],[-4,757],[-430,800],[-734,829],[-1882,905]];
 function safe(x,z,r=2){if(clearance(x,z)<r+4)return false;if(x>-1050&&x<170&&z<-280)return false;for(let i=1;i<river.length;i++)if(distance([x,z],river[i-1],river[i])<125+r)return false;return true;}
-function plan(){
+let cachedPlan;
+function plan(){if(cachedPlan)return cachedPlan;
  const staff=[],panels=[],supports=[],lights=[];
  const x=L.start[0]+18,z=L.start[1],span=Math.max(...L.track.filter(p=>Math.abs(p[0]-x)<40&&Math.abs(p[1]-z)<30).map(p=>L.widthAt(p)),40)/2+8;
  for(const side of [-1,1])supports.push({x,z:z+side*span,y:1,width:2,depth:2,height:25});
@@ -19,10 +20,10 @@ function plan(){
    // Keep new trackside furniture outside spectator footprints (all are west of x=1000).
    if(sx<1000&&sz>-195&&sz<650)continue;
    staff.push({x:sx,z:sz,y:1,role:'marshal',color:'#ff681f'});
-   if(panels.length<26&&safe(sx+nx*8,sz+nz*8,10))panels.push({x:sx+nx*8,z:sz+nz*8,y:1,color:T.teams[panels.length%T.teams.length].color,label:panels.length%3===0?'TAIPEI':panels.length%3===1?'F1':'GP'});
+   if(panels.length<26&&safe(sx+nx*8,sz+nz*8,10))panels.push({x:sx+nx*8,z:sz+nz*8,y:1,color:T.teams[panels.length%T.teams.length].color,label:'TAIPEI'});
   }
  }
- return {staff,panels,supports,lights,gantry:{x,z,span,underside:22},unofficial:true};
+ return cachedPlan={staff,panels,supports,lights,gantry:{x,z,span,underside:22},unofficial:true};
 }
 const font={F:['11111','10000','10000','11110','10000','10000','10000'],'1':['00100','01100','00100','00100','00100','00100','01110'],T:['11111','00100','00100','00100','00100','00100','00100'],A:['01110','10001','10001','11111','10001','10001','10001'],I:['11111','00100','00100','00100','00100','00100','11111'],P:['11110','10001','10001','11110','10000','10000','10000'],E:['11111','10000','10000','11110','10000','10000','11111'],G:['01111','10000','10000','10111','10001','10001','01111']};
 function lettering(m,text,x,y,z,scale,west=false,reverse=false){const total=text.length*6*scale;for(let c=0;c<text.length;c++)for(let row=0;row<7;row++){const bits=font[text[c]];if(!bits)continue;for(let k=0;k<5;){if(bits[row][k]!=='1'){k++;continue;}const first=k;while(k<5&&bits[row][k]==='1')k++;const a=(c*6+first)*scale-total/2,b=(c*6+k)*scale-total/2,top=y+(7-row)*scale,bottom=top-scale*.82;if(west)m.quad([x,bottom,z+(reverse?-a:a)],[x,bottom,z+(reverse?-b:b)],[x,top,z+(reverse?-b:b)],[x,top,z+(reverse?-a:a)],'#f4f4eb',0);else m.quad([x+a,bottom,z],[x+b,bottom,z],[x+b,top,z],[x+a,top,z],'#f4f4eb',0);}}}

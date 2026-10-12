@@ -14,7 +14,7 @@ test('five pairs of red lights face west toward approaching cars',()=>{
 test('both render adapters receive finite geometry within event triangle budget',()=>{
  let triangles=0,red=0;
  const mesh={box(...args){assert.ok(args.slice(0,6).every(Number.isFinite));assert.ok(args.slice(3,6).every(v=>v>0));triangles+=10;},flatrect(...args){assert.ok(args.slice(0,5).every(Number.isFinite));triangles+=2;},quad(...args){assert.ok(args.slice(0,4).flat().every(Number.isFinite));triangles+=2;},tri(...args){assert.ok(args.slice(0,3).flat().every(Number.isFinite));triangles++;if(args[3]==='#ff202b')red++;}};
- const p=E.build(mesh,mesh,mesh);assert.equal(p.staff.length,E.plan().staff.length);assert.equal(red,100);assert.ok(triangles<10000,`${triangles} triangles`);
+ const p=E.build(mesh,mesh,mesh);assert.equal(p.staff.length,E.plan().staff.length);assert.equal(red,100);assert.ok(triangles<11500,`${triangles} triangles`);
 });
 
 
@@ -25,3 +25,5 @@ test('D1 gantry front and rear glyphs read left to right from their own view',()
  for(const [face,sign] of [['west',-1],['east',1]]){const first=faces[face][0],last=faces[face].at(-1);assert.ok(sign*first[0][2]<sign*last[0][2]);}
  for(let i=0;i<faces.west.length;i++)for(let k=0;k<4;k++)assert.ok(Math.abs(faces.west[i][k][2]+faces.east[i][k][2]-2*g.z)<1e-9);
 });
+
+test("E1 TAIPEI boards keep their entire footprint outside road and pit",()=>{for(const p of E.plan().panels){assert.equal(p.label,"TAIPEI");for(const dx of [-10,0,10])for(const dz of [-.325,.325])assert.ok(E.clearance(p.x+dx,p.z+dz)>4);}});

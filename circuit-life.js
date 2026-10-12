@@ -7,8 +7,8 @@ function distance(p,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1
 function footprint(s){const c=Math.cos(s.angle),n=Math.sin(s.angle);return [[-s.w/2,-s.d/2],[s.w/2,-s.d/2],[s.w/2,s.d/2],[-s.w/2,s.d/2]].map(([u,v])=>[s.x+u*c-v*n,s.z+u*n+v*c]);}
 function raceClearance(s){const radius=Math.hypot(s.w,s.d)/2;return Math.min(...L.track.map((a,i)=>distance([s.x,s.z],a,L.track[(i+1)%L.track.length])-Math.max(L.widthAt(a),L.widthAt(L.track[(i+1)%L.track.length]))/2))-radius;}
 function plan(data){
- const aircraft=[-740,-610,-480].map((x,i)=>({id:'passenger-'+(i+1),kind:'passenger',x,z:-255,w:60,d:62,angle:0,y:APRON_Y,color:['#365c7f','#367369','#9d5867'][i]}));
- aircraft.push(...[-355,-295].map((x,i)=>({id:'fighter-'+(i+1),kind:'fighter',x,z:-257,w:16,d:24,angle:i?.15:-.15,y:APRON_Y,color:'#879397'})));
+ const aircraft=[-760,-610,-460].map((x,i)=>({id:'passenger-'+(i+1),kind:'passenger',x,z:-225,w:120,d:124,scale:2,angle:0,y:APRON_Y,color:['#365c7f','#367369','#9d5867'][i]}));
+ aircraft.push(...[-330,-275].map((x,i)=>({id:'fighter-'+(i+1),kind:'fighter',x,z:-259,w:32,d:48,scale:2,angle:0,y:APRON_Y,color:'#879397'})));
  const vessels=[];
  // Position along real map river segments; keep the entire bounding circle inside
  // the 178 m ribbon, away from bridge roads and from the race surface.
@@ -28,7 +28,7 @@ function plan(data){
  return {aircraft,vessels};
 }
 function build(base,objects,emissive,data){const result=plan(data);
- for(const s of [...result.aircraft,...result.vessels]){const ca=Math.cos(s.angle),sa=Math.sin(s.angle),p=(u,y,v)=>[s.x+u*ca-v*sa,s.y+y,s.z+u*sa+v*ca];
+ for(const s of [...result.aircraft,...result.vessels]){const ca=Math.cos(s.angle),sa=Math.sin(s.angle),scale=s.scale||1,p=(u,y,v)=>[s.x+(u*ca-v*sa)*scale,s.y+y*scale,s.z+(u*sa+v*ca)*scale];
   const tri=(a,b,c,color,mesh=objects)=>mesh.tri(p(...a),p(...b),p(...c),color,0);
   const quad=(a,b,c,d,color,mesh=objects)=>mesh.quad(p(...a),p(...b),p(...c),p(...d),color,0);
   function box(u,y,v,w,h,d,color,mesh=objects){const a=u-w/2,b=u+w/2,c=v-d/2,e=v+d/2;quad([a,y,c],[b,y,c],[b,y+h,c],[a,y+h,c],color,mesh);quad([b,y,e],[a,y,e],[a,y+h,e],[b,y+h,e],color,mesh);quad([a,y,e],[a,y,c],[a,y+h,c],[a,y+h,e],color,mesh);quad([b,y,c],[b,y,e],[b,y+h,e],[b,y+h,c],color,mesh);quad([a,y+h,c],[b,y+h,c],[b,y+h,e],[a,y+h,e],color,mesh);}

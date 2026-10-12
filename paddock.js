@@ -4,6 +4,14 @@
 const pi=Math.PI;
 function roofPoint(u,v){const span=62+14*Math.sin(pi*u),x=-670+1220*u,z=-21+7*Math.sin(2*pi*u)+(v-.5)*span;return [x,29+12*Math.sin(pi*u)+7*Math.exp(-(((u-.8)/.15)**2))+8*(1-(2*v-1)**2),z]}
 function roofNormal(u,v){const a=roofPoint(u-.0001,v),b=roofPoint(u+.0001,v),c=roofPoint(u,v-.0001),d=roofPoint(u,v+.0001),du=b.map((n,i)=>n-a[i]),dv=d.map((n,i)=>n-c[i]);let n=[dv[1]*du[2]-dv[2]*du[1],dv[2]*du[0]-dv[0]*du[2],dv[0]*du[1]-dv[1]*du[0]],length=Math.hypot(...n);return n.map(x=>x/length)}
+// Inverse roof parameterization gives the same surface used by the shell mesh.
+function roofSurface(x,z){const u=(x+670)/1220,span=62+14*Math.sin(pi*u),v=.5+(z+21-7*Math.sin(2*pi*u))/span;return roofPoint(u,v);}
+function buildRoofStroke(mesh,a,b,width,bottom,top,side,face,type){
+ const dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),nx=-dz/len*width/2,nz=dx/len*width/2,steps=Math.ceil(len/3);
+ const point=(t,sign,offset)=>{const x=a[0]+dx*t+nx*sign,z=a[1]+dz*t+nz*sign;return [x,roofSurface(x,z)[1]+offset,z]};
+ for(let i=0;i<steps;i++){const a=i/steps,b=(i+1)/steps,A=point(a,-1,top),B=point(b,-1,top),C=point(b,1,top),D=point(a,1,top);mesh.quad(D,C,B,A,face,type);for(const sign of [-1,1])mesh.quad(point(a,sign,bottom),point(b,sign,bottom),point(b,sign,top),point(a,sign,top),side,8);}
+ for(const t of [0,1])mesh.quad(point(t,-1,bottom),point(t,1,bottom),point(t,1,top),point(t,-1,top),side,8);
+}
 function buildRoof(mesh){
  const steps=96,bands=12,rgb=[.70,.79,.83];
  function vertex(u,v,offset,down=false){const p=roofPoint(u,v),n=roofNormal(u,v);p[1]+=offset;mesh.arr.push(...p,...n.map(x=>down?-x:x),...rgb,u,v,8)}
@@ -21,6 +29,13 @@ function buildRoof(mesh){
  for(const end of [0,1])for(let j=0;j<bands;j++){const a=roofPoint(end,j/bands),b=roofPoint(end,(j+1)/bands);mesh.quad([a[0],12,a[2]],[b[0],12,b[2]],b,a,'#80aebd',13);}
  // A shallow underside closes the shell without visible ribs or panel stripes.
  for(let i=0;i<steps;i++)for(let j=0;j<bands;j++)for(const [u,v] of [[i/steps,j/bands],[(i+1)/steps,(j+1)/bands],[(i+1)/steps,j/bands],[i/steps,j/bands],[i/steps,(j+1)/bands],[(i+1)/steps,(j+1)/bands]])vertex(u,v,-1.8,true);
+}
+function buildScreens(mesh){
+ const uv=[[.5/1024,.5/2048],[319.5/1024,.5/2048],[319.5/1024,127.5/2048],[.5/1024,127.5/2048]];
+ // From the +Z exterior, screen-right points toward -X in both cameras.
+ function screen(x,y,z,w,h){mesh.quad([x+w/2,y,z],[x-w/2,y,z],[x-w/2,y+h,z],[x+w/2,y+h,z],'#ffffff',16,uv);}
+ for(let i=0;i<12;i++)screen(-267+i*28,.4,-7.9,23,8.9);
+ for(const x of [-215,-95,25])screen(x,13.5,8.15,110,11.8);
 }
 function createRaceCar(factory,team){
  const m=factory(),dark='#101820',col=team.color,accent=team.accent;
@@ -50,5 +65,5 @@ function createRaceCar(factory,team){
  return m;
 }
 function appendCar(target,source,x,z,angle,scale=3,ground=2.4){const c=Math.cos(angle),s=Math.sin(angle),a=source.arr;for(let i=0;i<a.length;i+=12)target.arr.push(x+(c*a[i]-s*a[i+2])*scale,ground+a[i+1]*scale,z+(s*a[i]+c*a[i+2])*scale,c*a[i+3]-s*a[i+5],a[i+4],s*a[i+3]+c*a[i+5],...a.slice(i+6,i+12));}
-const api={roofPoint,roofNormal,buildRoof,createRaceCar,appendCar};if(typeof module==='object')module.exports=api;else root.CircuitPaddock=api;
+const api={roofPoint,roofNormal,roofSurface,buildRoofStroke,buildRoof,buildScreens,createRaceCar,appendCar};if(typeof module==='object')module.exports=api;else root.CircuitPaddock=api;
 })(typeof window==='object'?window:this);

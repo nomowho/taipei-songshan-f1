@@ -18,7 +18,9 @@
 
 最新 D1 更新：七座朝向賽道的看台（主看台長 520 公尺）、六座草坡與 80 棵樹、五架飛機與五艘船艇；維修區平順銜接、雙面 TAIPEI 起跑架。詳見 [D1_RELEASE.md](docs/D1_RELEASE.md)。
 
-部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`circuit-event.js`、`circuit-life.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
+最新 E1 更新：320 棵六種樹形、五倍樹高、連續大型山坡、貼合屋面的 TAIPEI、放大飛機、近賽道看台、護欄與動態賽事螢幕、河岸路寬加倍。詳見 [E1_RELEASE.md](docs/E1_RELEASE.md)。
+
+部署須包含根目錄所有 `.js`（`circuit.js`、`circuit-scene.js`、`circuit-spectators.js`、`circuit-event.js`、`circuit-life.js`、`circuit-broadcast.js`、`landmarks.js`、`paddock.js`、`teams.js`、`city.js`、`materials.js`）及 `data/taipei-map.js`。
 
 ## 操作
 

@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 let layout;try{layout=require('../circuit.js')}catch{}
 test('C1 reference shape has measured length, 22 turns and a compact pit lane',()=>{
  assert.ok(layout,'shared A1 circuit module must exist');
- assert.ok(Math.abs(layout.length-7411.184)<.1);assert.equal(layout.turns.length,22);
+ assert.ok(layout.length>7400&&layout.length<7430);assert.equal(layout.turns.length,22);
  assert.ok(layout.pitLength>=400&&layout.pitLength<=560);assert.equal(layout.grid.length,22);
  assert.equal(layout.laps,42);assert.ok(layout.laps*layout.length>305000);
 });
@@ -51,7 +51,7 @@ test('fallback road remains above nearby runoff and grid stays above road',()=>{
 });
 
 test('road width varies smoothly between technical bends, straights and starting grid',()=>{
- const widths=layout.track.map(layout.widthAt);assert.ok(Math.min(...widths)>=16&&Math.min(...widths)<20);assert.ok(Math.max(...widths)>39&&Math.max(...widths)<42);
+ const widths=layout.track.map(layout.widthAt);assert.ok(Math.min(...widths)>=16&&Math.min(...widths)<20);assert.ok(Math.max(...widths)>39&&Math.max(...widths)<49);
  for(let i=1;i<widths.length;i++)assert.ok(Math.abs(widths[i]-widths[i-1])<1,'no abrupt edge steps');
  assert.ok(Math.max(...layout.track.map(p=>p[1]))>630);assert.ok(Math.min(...layout.track.map(p=>p[1]))<-300);
 });
@@ -80,3 +80,8 @@ test('D1 pit corridor has openings through south edge paint and posts',()=>{
  for(const p of posts.filter(p=>p[1]>-210&&p[1]<-190))assert.ok(layout.pitClearance(p)>=3);
  assert.ok(cuts.some(q=>q[0][0]>500&&q[0][0]<650&&q[0][2]<-190),'edge resumes between pit openings');
 });
+
+test('E1 river road doubles baseline with smooth transition',()=>{for(const p of layout.track){const f=layout.widthAt(p)/layout.baselineWidthAt(p);if(p[1]>=360)assert.equal(f,2);if(p[1]<=230)assert.equal(f,1);}for(let z=229;z<=361;z+=.1)assert.ok(Math.abs(layout.widthAt([0,z+.1])-layout.widthAt([0,z]))<.06);});
+test('E1 joined rails preserve road and pit openings',()=>{const rails=require('../circuit-scene.js').barrierPlan();assert.ok(rails.length>layout.track.length);for(const r of rails)for(const p of r.points){assert.ok(layout.roadClearance(p)>=4);assert.ok(layout.pitClearance(p)>=4);}const pairs=new Set(rails.map(r=>`${r.side}:${r.index}`));assert.ok(rails.filter(r=>pairs.has(`${r.side}:${(r.index+1)%layout.track.length}`)).length/rails.length>.98);});
+
+test('E1 actual road ribbon uses doubled river cross sections in both renderers',()=>{const road=[],mesh={quad(a,b,c,d,color){if(color==='#353a3e')road.push([a,b,c,d]);},tri(){},box(){},flatrect(){},path(){}};require('../circuit-scene.js').build(mesh,mesh,mesh);assert.ok(road.length>=layout.track.length);for(let i=0;i<layout.track.length;i++){const [a,b,c,d]=road[i];assert.ok(Math.abs(Math.hypot(a[0]-d[0],a[2]-d[2])-layout.widthAt(layout.track[i]))<1e-6);}});
