@@ -54,6 +54,7 @@ body[data-drag-mode="pan"] #view{cursor:move}#panMode{touch-action:manipulation}
 <script src="./circuit-scene.js?v=20261012-e4"></script>
 <script src="./circuit-spectators.js?v=20261012-e4"></script>
 <script src="./circuit-life.js?v=20261012-e4"></script>
+<script src="./circuit-market.js?v=20261013-e6"></script>
 <script src="./circuit-event.js?v=20261012-e4"></script>
 <script src="./landmarks.js?v=20261012-e4"></script>
 <script src="./materials.js?v=20261012-e4"></script>
@@ -119,7 +120,7 @@ function fallback2D(C){document.getElementById('rendererStatus').textContent='2D
   mesh.cylinder=(x,z,r,h,y,color,N=8)=>{for(let i=0;i<N;i++){const aa=i/N*PI*2,bb=(i+1)/N*PI*2,a=[x+cos(aa)*r,y,z+sin(aa)*r],b=[x+cos(bb)*r,y,z+sin(bb)*r],c=[b[0],y+h,b[2]],d=[a[0],y+h,a[2]];mesh.quad(a,b,c,d,color);mesh.tri([x,y+h,z],d,c,color)}};
   return mesh;
  }
- CircuitScene.build(adapter('surface'),adapter(),adapter());CircuitSpectators.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitEvent.build(adapter('surface'),adapter(),adapter());CircuitLife.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitLandmarks.build(adapter('city'));
+ CircuitScene.build(adapter('surface'),adapter(),adapter());CircuitSpectators.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitEvent.build(adapter('surface'),adapter(),adapter());CircuitLife.build(adapter('surface'),adapter(),adapter(),TaipeiMapData);CircuitMarket.build(adapter('surface'),adapter(),adapter());CircuitLandmarks.build(adapter('city'));
  const broadcast=CircuitBroadcast.create();let broadcastStarted=performance.now();let F=0, nowT=performance.now(),w=innerWidth,h=innerHeight;const $=id=>document.getElementById(id);
  function focus(name){const p=CircuitLayout.presets[name==='reset'?'overview':name];if(!p)return;stopOnboard();Object.assign(g,{az:p.az,el:p.el,d:p.dist,tx:p.tx,tz:p.tz,ty:p.ty});$('eyebrow').textContent=p.eyebrow;$('focusName').textContent=p.title;document.querySelectorAll('[data-preset]').forEach(x=>x.classList.toggle('active',x.dataset.preset===name));}
  document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{auto=false;$('auto').classList.remove('on');focus(b.dataset.preset)});$('night').onclick=()=>{isNight=!isNight;$('night').classList.toggle('on',isNight);$('night').textContent=isNight?'◐ 夜景':'☀ 日景'};$('buildings').onclick=()=>{withBuildings=!withBuildings;$('buildings').classList.toggle('on',withBuildings)};$('labels').onclick=()=>{withLabels=!withLabels;$('labels').classList.toggle('on',withLabels)};$('auto').onclick=()=>{auto=!auto;$('auto').classList.toggle('on',auto)};$('zoomIn').onclick=()=>g.d=cl(g.d*.75,85,11000);$('zoomOut').onclick=()=>g.d=cl(g.d*1.3,85,11000);
@@ -187,7 +188,7 @@ for(const [i,x,z] of [[0,-1150,340],[1,1260,-145],[2,1100,-300],[3,-1070,-365],[
 for(let i=0;i<12;i++){const x=-720+i*120;if(sceneryClear(x,-160,100,2))brandPanel(x,3,-160,100,9,i%3);}
 for(let i=0;i<15;i++){const x=-700+i*95,z=342;if(!sceneryClear(x+10,z,20,3))continue;objects.cylinder(x,z,.6,37,0,'#b3c4ca',8);brandPanel(x+10,14,z,19,23,i%3,true);}
 // A1 track, curbs, short pit, grid and local safety spaces.
-CircuitScene.build(base,objects,emissive);CircuitSpectators.build(base,objects,emissive,TaipeiMapData);CircuitEvent.build(base,objects,emissive);CircuitLife.build(base,objects,emissive,TaipeiMapData);
+CircuitScene.build(base,objects,emissive);CircuitSpectators.build(base,objects,emissive,TaipeiMapData);CircuitEvent.build(base,objects,emissive);CircuitLife.build(base,objects,emissive,TaipeiMapData);CircuitMarket.build(base,objects,emissive);
 // Apron parking service lights, tire walls & planted trees
 for(let x=-1250;x<=1250;x+=89){for(let z of [-460,343]){if(!sceneryClear(x,z,3,3))continue;let h=16+rnd()*4;objects.box(x,-1,z,1,h,1,'#a4b6c0');emissive.box(x,h,z,3,1,3,'#a6dce4')}}
 function tree(x,z,h){objects.cylinder(x,z,1.2,h*.58,-6,'#70634e',7);objects.crown(x,h*.60-6,z,h*.36,h*.48,h*.37,'#4e7050');objects.crown(x+h*.20,h*.53-6,z-h*.13,h*.28,h*.35,h*.29,'#668358');}
