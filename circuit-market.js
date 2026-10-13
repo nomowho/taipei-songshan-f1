@@ -44,7 +44,29 @@ function build(base,objects,emissive){const stalls=plan();
   box(4,0,8,.25,2.5,.25,'#c4cdd0');box(4,2.5,8,3.6,.25,3.2,'#b59163');
   for(const u of [1.4,6.6]){box(u,0,8,.25,1.4,.25,'#b3bfc1');box(u,1.4,8,1.3,.2,1.3,color);}
  }
+ buildMerch(base,objects,emissive);
  return stalls;
 }
-const api={plan,build};if(typeof module==='object')module.exports=api;else root.CircuitMarket=api;
+Object.assign(font,{F:['11111','10000','10000','11110','10000','10000','10000'],N:['10001','11001','11001','10101','10011','10011','10001'],S:['01111','10000','10000','01110','00001','00001','11110'],C:['01111','10000','10000','10000','10000','10000','01111'],M:['10001','11011','10101','10101','10001','10001','10001'],H:['10001','10001','10001','11111','10001','10001','10001'],U:['10001','10001','10001','10001','10001','10001','01110'],'1':['00100','01100','00100','00100','00100','00100','01110']});
+function merchPlan(){return {store:{x:590,z:-403,w:112,d:42,y:-3.8},booths:[420,452,484,696,728,760].map((x,i)=>({x,z:-359,w:20,d:16,y:x<460?-4.8:-3.8,label:['CAPS','TEAM KIT','MODELS','HELMETS','FLAGS','GIFTS'][i],color:['#db414b','#48bcb4','#437dba','#e5b451','#907ac0','#e26d45'][i]}))};}
+function sign(mesh,text,x,y,z,scale,face=1){const total=text.length*6*scale;for(let c=0;c<text.length;c++){const glyph=font[text[c]];if(!glyph)continue;for(let row=0;row<7;row++)for(let k=0;k<5;k++)if(glyph[row][k]==='1'){const a=(total/2-(c*6+k)*scale)*face,b=a-scale*.86*face,h=y+(6-row)*scale;mesh.quad([x+a,h,z],[x+b,h,z],[x+b,h+scale*.86,z],[x+a,h+scale*.86,z],'#f4ede0',2);}}}
+function buildMerch(base,objects,emissive){const p=merchPlan(),s=p.store;
+ // Raised metal-and-glass pavilion on the city-facing side of the paddock.
+ base.box(s.x,-4,s.z,116,.2,46,'#999f9d',6);
+ objects.box(s.x,s.y,s.z-20.4,112,18,1.2,'#263841',8);
+ for(const side of [-1,1]){objects.box(s.x+side*55.5,s.y,s.z,1,18,42,'#567a85',13);objects.box(s.x+side*53,s.y,s.z+20,.6,19,.6,'#a6c4cc',8);}
+ // Open middle entrance; glazed side displays keep merchandise visible.
+ for(const u of [-42,42]){objects.box(s.x+u,s.y,s.z+20,26,3,.8,'#263b46',8);objects.box(s.x+u,s.y+3,s.z+20,26,12,.25,'#709ca5',13);}
+ for(let i=0;i<28;i++){const a=-58+i*116/28,b=a+116/28,ha=19+4*Math.cos(a/58*Math.PI/2),hb=19+4*Math.cos(b/58*Math.PI/2);objects.quad([s.x+a,s.y+ha,s.z-23],[s.x+a,s.y+ha,s.z+24],[s.x+b,s.y+hb,s.z+24],[s.x+b,s.y+hb,s.z-23],'#b7cbd0',8);emissive.box(s.x+(a+b)/2,s.y+(ha+hb)/2-.25,s.z+24,b-a,.25,.3,'#74e0e6',12);}
+ for(const face of [-1,1]){const z=s.z+face*22.2;objects.box(s.x,s.y+17,z,88,8,.5,'#142632',8);sign(objects,'F1 FAN STORE',s.x,s.y+18,z+face*.28,.85,face);}
+ // Team-colour clothing, helmets and model cars are original concept merchandise.
+ for(let i=0;i<11;i++){const x=s.x-47+i*9.4,col=['#e63e4b','#5ecbbd','#386cad','#ecaf46'][i%4];objects.box(x,s.y+1,s.z+3,6,.8,6,'#b7bbad',8);objects.box(x,s.y+3.5,s.z-8,.2,8,.2,'#a1b6bf',8);objects.box(x,s.y+10.5,s.z-8,6,.2,.2,'#a1b6bf',8);objects.box(x,s.y+5,s.z-8,3.3,4.5,.8,col,0);objects.box(x,s.y+7.6,s.z-8,5,1.6,.8,col,0);objects.box(x,s.y+1.8,s.z+3,2.5,.9,4.3,col,8);for(const u of [-1.5,1.5])for(const v of [-1.4,1.4])objects.box(x+u,s.y+1.7,s.z+3+v,.65,.9,1.1,'#17252b',0);}
+ objects.box(s.x,s.y,s.z+14,22,3.5,4,'#405b67',8);emissive.box(s.x,s.y+3.5,s.z+14,22,.2,4,'#a4e5e7',12);
+ for(const b of p.booths){const {x,z,y,color}=b;base.box(x,y-.2,z,20,.2,16,'#969d99',6);objects.box(x,y,z+4,16,8,.6,'#2b3e47',8);for(const u of [-8,8])objects.box(x+u,y,z,.3,9,10,'#829eaa',8);objects.box(x,y+8,z,18,.6,13,'#a6bdc6',8);objects.box(x,y+8.6,z-6.5,18,4,.6,color,0);sign(objects,b.label,x,y+9,z-6.83,.35,-1);emissive.box(x,y+7.8,z-5,15,.2,.3,'#b1edf0',12);objects.box(x,y,z-3,14,3.2,3,color,8);
+  for(let i=0;i<4;i++){const u=x-5+i*3.3;objects.box(u,y+3.2,z-3,2,.4,1.8,'#dccbb1',0);if(b.label==='TEAM KIT'||b.label==='FLAGS'){objects.box(u,y+4,z+3,1.8,2.5,.2,color,0);objects.box(u,y+5.6,z+3,3,.8,.2,color,0);}else{objects.box(u,y+3.6,z-3,1.5,.9,1.3,color,8);objects.box(u,y+3.6,z-4,.8,.15,1,'#192b33',8);}}
+  objects.box(x-3,y,z-9,.8,1.2,.7,'#23333c');objects.box(x-3,y+1.2,z-9,1.3,1.5,.9,color);objects.box(x-3,y+2.7,z-9,.85,.7,.8,'#d7ae92',0);
+ }
+ return p;
+}
+const api={plan,build,merchPlan,buildMerch};if(typeof module==='object')module.exports=api;else root.CircuitMarket=api;
 })(typeof window==='object'?window:globalThis);

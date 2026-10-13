@@ -2,7 +2,8 @@
 (function(root){
 'use strict';
 const L=typeof module==='object'?require('./circuit.js'):root.CircuitLayout;
-const runoffs=[{kind:'asphalt',points:[[1640,-10],[1780,-10],[1780,190],[1640,190]]},{kind:'gravel',points:[[-1650,330],[-1510,330],[-1510,490],[-1650,490]]},{kind:'gravel',points:[[1240,-485],[1510,-485],[1510,-410],[1240,-410]]}];
+// Removed the two obsolete rectangular gravel pads at the owner's request.
+const runoffs=[{kind:'asphalt',points:[[1640,-10],[1780,-10],[1780,190],[1640,190]]}];
 // Baked opening indices for the fixed E1 route; scoped tests validate actual clearance.
 const barrierOpenings=new Set([146,148,150,152,154,156,158,160,162,164,3744,3746,3748,3750,3752,3754,3756,3758,3760,3762,3764,3766,3768,3770,3772,3774,3776,3778,3780,3782,3784,3786,3788,3790,3792,3794,3796,3798,3800,3802,3804,3806,3808,3810,3812,3814,3816,3818,3820,3822,3824,3826,5408,5410,5412,5414,5416,5418,5420,5422,5424]);
 let barriers;
@@ -36,7 +37,7 @@ function build(base,objects,emissive){
   objects.quad([a[0],1,a[1]],[b[0],1,b[1]],[b[0],3,b[1]],[a[0],3,a[1]],'#bcc5c9',0);
   objects.quad([a[0]+nx,3,a[1]+nz],[b[0]+nx,3,b[1]+nz],[b[0]-nx,3,b[1]-nz],[a[0]-nx,3,a[1]-nz],'#e9e7dc',0);
  }
- wall([1785,-10],[1785,195]);wall([-1655,325],[-1655,495]);wall([1235,-490],[1515,-490]);
+ wall([1785,-10],[1785,195]);
  const dx=L.paddockOffset.x,dz=L.paddockOffset.z;
  // Shared continuous ribbon, level with the race road; no raised dark caps.
  const Q=L.pit,edge=Q.map((p,i)=>{const a=Q[Math.max(0,i-1)],b=Q[Math.min(Q.length-1,i+1)],d=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/d*L.pitWidths[i]/2,(b[0]-a[0])/d*L.pitWidths[i]/2]}),v=(i,s)=>[Q[i][0]+s*edge[i][0],1.65,Q[i][1]+s*edge[i][1]];
