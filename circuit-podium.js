@@ -27,14 +27,14 @@ function build(base,objects,emissive){const s=plan(),p=(x,y,z)=>[s.x+x,s.y+y,s.z
  // Centre plinth with an oversized exhibition trophy; two smaller ceremony cups.
  ellipse(objects,0,5,5.2,5.2,9.3,12.3,'#152c38');
  function trophy(cx,cz,y,scale){const v=(x,h,z)=>[cx+x*scale,y+h*scale,cz+z*scale];
-  ellipse(objects,cx,cz,3.3*scale,3.3*scale,y,y+1.1*scale,'#caa052');
+  ellipse(objects,cx,cz,3.3*scale,3.3*scale,y,y+1.1*scale,'#e9b951',17);
   // Eight flared tiers evoke Taipei 101 without copying an existing race trophy.
-  for(let i=0;i<8;i++){const lo=.7+i*1.5,hi=lo+1.3,r=1.2+(i%2)*.1,R=r+.55;for(let side=0;side<4;side++){const a=side*Math.PI/2,b=(side+1)*Math.PI/2;quad(objects,v(Math.cos(a)*r,lo,Math.sin(a)*r),v(Math.cos(b)*r,lo,Math.sin(b)*r),v(Math.cos(b)*R,hi,Math.sin(b)*R),v(Math.cos(a)*R,hi,Math.sin(a)*R),'#6cc7c2',8);}}
-  box(emissive,cx,y+13*scale,cz,.22*scale,3*scale,.22*scale,'#c2f6ef',12);
+  for(let i=0;i<8;i++){const lo=.7+i*1.5,hi=lo+1.3,r=1.2+(i%2)*.1,R=r+.55;for(let side=0;side<4;side++){const a=side*Math.PI/2,b=(side+1)*Math.PI/2;quad(objects,v(Math.cos(a)*r,lo,Math.sin(a)*r),v(Math.cos(b)*r,lo,Math.sin(b)*r),v(Math.cos(b)*R,hi,Math.sin(b)*R),v(Math.cos(a)*R,hi,Math.sin(a)*R),'#d7e4ec',17);}}
+  for(let k=0;k<4;k++){const a=k*Math.PI/2,b=(k+1)*Math.PI/2;quad(objects,v(.16*Math.cos(a),13,.16*Math.sin(a)),v(.16*Math.cos(b),13,.16*Math.sin(b)),v(.16*Math.cos(b),16,.16*Math.sin(b)),v(.16*Math.cos(a),16,.16*Math.sin(a)),'#e3ebef',17);}
   // Two swept gold ribbons form a hollow aerodynamic crown around the tower.
-  for(const side of [-1,1])for(let i=0;i<40;i++){const a=i/40*Math.PI,b=(i+1)/40*Math.PI;const f=(t,edge,depth=0)=>v(side*(2.4+4.8*Math.sin(t)+edge),1.2+20*t/Math.PI,1.8*Math.sin(t*2)+edge*.4+depth);quad(objects,f(a,-.6),f(b,-.6),f(b,.6),f(a,.6),'#e2b65c');quad(objects,f(a,.6,-.35),f(b,.6,-.35),f(b,-.6,-.35),f(a,-.6,-.35),'#ad7835');quad(emissive,f(a,.48,.06),f(b,.48,.06),f(b,.6,.06),f(a,.6,.06),'#f9cb72',12);}
+  for(const side of [-1,1])for(let i=0;i<40;i++){const a=i/40*Math.PI,b=(i+1)/40*Math.PI;const f=(t,edge,depth=0)=>v(side*(2.4+4.8*Math.sin(t)+edge),1.2+20*t/Math.PI,1.8*Math.sin(t*2)+edge*.4+depth);quad(objects,f(a,-.6),f(b,-.6),f(b,.6),f(a,.6),'#f0bd59',17);quad(objects,f(a,.6,-.35),f(b,.6,-.35),f(b,-.6,-.35),f(a,-.6,-.35),'#d6a445',17);quad(objects,f(a,.48,.06),f(b,.48,.06),f(b,.6,.06),f(a,.6,.06),'#ffe0a1',17);}
   // River-like blue ribbon wraps the trophy's dark plinth.
-  for(let i=0;i<24;i++){const a=i/24*Math.PI*2,b=(i+1)/24*Math.PI*2;quad(emissive,v(3.35*Math.cos(a),.65,3.35*Math.sin(a)),v(3.35*Math.cos(b),.65,3.35*Math.sin(b)),v(3.35*Math.cos(b),.83,3.35*Math.sin(b)),v(3.35*Math.cos(a),.83,3.35*Math.sin(a)),'#62dcdf',12);}
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2,b=(i+1)/24*Math.PI*2;quad(objects,v(3.35*Math.cos(a),.65,3.35*Math.sin(a)),v(3.35*Math.cos(b),.65,3.35*Math.sin(b)),v(3.35*Math.cos(b),.83,3.35*Math.sin(b)),v(3.35*Math.cos(a),.83,3.35*Math.sin(a)),'#c5e2ec',17);}
  }
  trophy(0,5,12.3,1);trophy(23,10,7.4,.25);trophy(-23,10,6.5,.22);
  Market.sign(objects,'TAIPEI',s.x,s.y+10,s.z+10.25,.25,1);

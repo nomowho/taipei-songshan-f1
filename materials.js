@@ -75,7 +75,8 @@ void main(){
  vec3 N=normalize(vN),V=normalize(uEye-vPos),L=normalize(vec3(-.52,.80,.34));float sun=max(dot(N,L),0.);
  float dist=length(uEye-vPos),detail=1.-smoothstep(800.,3600.,dist);vec2 surface=abs(N.y)>.6?vPos.xz:(abs(N.x)>.6?vPos.zy:vPos.xy);
  vec3 albedo=vC;float rough=.8;vec3 emission=vec3(0.);float material=floor(vType+.1);
- if(material==16.){albedo=texture2D(uRoof,vUV).rgb;rough=.65;emission=albedo*(.85+uNight*.65);}
+ if(material==17.){rough=.035;}
+ else if(material==16.){albedo=texture2D(uRoof,vUV).rgb;rough=.65;emission=albedo*(.85+uNight*.65);}
  else if(material==14.||material==15.){albedo=texture2D(uRoof,vUV).rgb;rough=.65;emission=albedo*(.24+uNight*.70);}
  else if(material==12.){albedo=mix(vC*.38,vC*.15,uNight);emission=vC*uNight*2.;rough=.22;}
  else if(material==13.){
@@ -126,6 +127,22 @@ void main(){
   float rim=pow(1.-max(dot(N,V),0.),3.);
   c=mix(c,env*mix(vec3(1.),vC,.28),.62+rim*.2);
   c+=vec3(.76,.86,.94)*pow(max(dot(R,L),0.),72.)*mix(.85,.28,uNight);
+ }
+ // Trophy-only polished metal: coloured conductor reflection and fixed exhibition lights.
+ // Analytic environment approximation; highlights move with the camera, not time.
+ if(material==17.){
+  vec3 R=reflect(-V,N);
+  float sky=smoothstep(-.18,.65,R.y);
+  vec3 env=mix(vec3(.30,.34,.40),vec3(.85,.93,1.),sky);
+  env=mix(env,env*vec3(.65,.73,.86),uNight);
+  float strip=pow(max(0.,1.-abs(R.x*.82+R.z*.57-.18)),32.);
+  float key=pow(max(dot(R,normalize(vec3(-.55,.65,.52))),0.),42.);
+  float fill=pow(max(dot(R,normalize(vec3(.62,.25,-.74))),0.),18.);
+  float softbox=pow(max(0.,1.-abs(R.y+.30)),5.);
+  env+=vec3(1.,.97,.90)*softbox*.95+vec3(1.,.94,.81)*(strip*.85+key*2.4)+vec3(.70,.86,1.)*fill*1.3;
+  vec3 f0=clamp(vC,vec3(.02),vec3(.98));
+  vec3 fresnel=f0+(vec3(1.)-f0)*pow(1.-max(dot(N,V),0.),5.);
+  c=env*fresnel+albedo*.065;
  }
  float fog=smoothstep(3900.,11500.,dist)*.64;c=mix(c,uFog,fog);c=pow(max(c,vec3(0.)),vec3(.90));gl_FragColor=vec4(c,1.);
 }`;
