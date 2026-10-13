@@ -47,7 +47,7 @@ function build(base,objects,emissive){const stalls=plan();
  buildMerch(base,objects,emissive);
  return stalls;
 }
-Object.assign(font,{F:['11111','10000','10000','11110','10000','10000','10000'],N:['10001','11001','11001','10101','10011','10011','10001'],S:['01111','10000','10000','01110','00001','00001','11110'],C:['01111','10000','10000','10000','10000','10000','01111'],M:['10001','11011','10101','10101','10001','10001','10001'],H:['10001','10001','10001','11111','10001','10001','10001'],U:['10001','10001','10001','10001','10001','10001','01110'],'1':['00100','01100','00100','00100','00100','00100','01110']});
+Object.assign(font,{P:['11110','10001','10001','11110','10000','10000','10000'],F:['11111','10000','10000','11110','10000','10000','10000'],N:['10001','11001','11001','10101','10011','10011','10001'],S:['01111','10000','10000','01110','00001','00001','11110'],C:['01111','10000','10000','10000','10000','10000','01111'],M:['10001','11011','10101','10101','10001','10001','10001'],H:['10001','10001','10001','11111','10001','10001','10001'],U:['10001','10001','10001','10001','10001','10001','01110'],'1':['00100','01100','00100','00100','00100','00100','01110']});
 function merchPlan(){return {store:{x:590,z:-403,w:112,d:42,y:-3.8},booths:[420,452,484,696,728,760].map((x,i)=>({x,z:-359,w:20,d:16,y:x<460?-4.8:-3.8,label:['CAPS','TEAM KIT','MODELS','HELMETS','FLAGS','GIFTS'][i],color:['#db414b','#48bcb4','#437dba','#e5b451','#907ac0','#e26d45'][i]}))};}
 function sign(mesh,text,x,y,z,scale,face=1){const total=text.length*6*scale;for(let c=0;c<text.length;c++){const glyph=font[text[c]];if(!glyph)continue;for(let row=0;row<7;row++)for(let k=0;k<5;k++)if(glyph[row][k]==='1'){const a=(total/2-(c*6+k)*scale)*face,b=a-scale*.86*face,h=y+(6-row)*scale;mesh.quad([x+a,h,z],[x+b,h,z],[x+b,h+scale*.86,z],[x+a,h+scale*.86,z],'#f4ede0',2);}}}
 function buildMerch(base,objects,emissive){const p=merchPlan(),s=p.store;
@@ -68,5 +68,5 @@ function buildMerch(base,objects,emissive){const p=merchPlan(),s=p.store;
  }
  return p;
 }
-const api={plan,build,merchPlan,buildMerch};if(typeof module==='object')module.exports=api;else root.CircuitMarket=api;
+const api={plan,build,merchPlan,buildMerch,sign};if(typeof module==='object')module.exports=api;else root.CircuitMarket=api;
 })(typeof window==='object'?window:globalThis);
