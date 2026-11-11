@@ -38,7 +38,7 @@ button:focus-visible,#view:focus-visible{outline:2px solid #58dce8;outline-offse
 body[data-drag-mode="pan"] #view{cursor:move}#panMode{touch-action:manipulation}
 @media(max-width:380px) and (min-height:521px){.right{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.right>#auto{grid-column:span 2}.right>div{grid-column:span 2;justify-content:center}.right .mode-btn{width:100%;min-width:0}.left{bottom:calc(173px + env(safe-area-inset-bottom))}}
 </style>
-<link rel="stylesheet" href="./driving.css?v=20261111-drive2"></head><body>
+<link rel="stylesheet" href="./driving.css?v=20261111-drive2a"></head><body>
 <canvas id="view" tabindex="0" aria-label="互動賽道：拖曳旋轉、平移按鈕切換單指平移、雙指平移縮放；方向鍵旋轉、加減號縮放、0 重設"></canvas><div class="vignette"></div>
 <div class="top"><div class="title"><div class="brand">FORMULA CONCEPT / 3D EXPERIENCE</div><h1>TAIPEI<br>GRAND PRIX<span style="color:#ff283b">.</span></h1><div class="sub">SONGSHAN AIRPORT / INTERACTIVE CIRCUIT</div><div class="concept">非官方概念設計 / UNOFFICIAL CONCEPT</div><div class="map-credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> · <a href="./docs/MAP_SOURCES.md" target="_blank">圖資說明</a><br>建物缺失高度採估算 · 品牌為視覺示意，非本賽事贊助</div></div><div class="mini"><div class="h">TRACK SCHEMATIC <span id="mapMode">LIVE 3D</span></div><button id="expandMap" aria-expanded="false" aria-label="放大賽道配置圖"><canvas id="map"></canvas></button><div class="facts"><div class="f"><div class="k">賽道長度</div><div class="n" id="len">— KM</div></div><div class="f"><div class="k">比賽圈數</div><div class="n" id="laps">—</div></div></div></div></div>
 <div class="compass"><span>N</span><div class="diamond" id="compass"></div></div>
@@ -50,8 +50,8 @@ body[data-drag-mode="pan"] #view{cursor:move}#panMode{touch-action:manipulation}
 <script src="./city.js?v=20261012-e4"></script>
 <script src="./teams.js?v=20261012-e4"></script>
 <script src="./paddock.js?v=20261012-e4"></script>
-<script src="./driving.js?v=20261111-drive2"></script>
-<script src="./drive-ui.js?v=20261111-drive2"></script>
+<script src="./driving.js?v=20261111-drive2a"></script>
+<script src="./drive-ui.js?v=20261111-drive2a"></script>
 <script src="./circuit.js?v=20261012-e4"></script>
 <script src="./circuit-broadcast.js?v=20261012-e4"></script>
 <script src="./circuit-scene.js?v=20261013-e7"></script>
@@ -257,7 +257,7 @@ const drive=CircuitDriveUI.mount(driver,{onStart(){stopOnboard();autospin=false;
 const pointers=new Map();let lastPair=null;let moved=false;C.addEventListener('contextmenu',e=>e.preventDefault());C.addEventListener('pointerdown',e=>{stopOnboard();C.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,prevX:e.clientX,prevY:e.clientY,button:e.button});lastPair=null;moved=false});C.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;for(const point of pointers.values()){point.prevX=point.x;point.prevY=point.y}let p=pointers.get(e.pointerId);p.prevX=p.x;p.prevY=p.y;p.x=e.clientX;p.y=e.clientY;let dx=p.x-p.prevX,dy=p.y-p.prevY;moved=moved||Math.hypot(dx,dy)>2;autospin=false;updateButton('auto',false);if(pointers.size===1){if(dragMode==='pan'||p.button===2||e.shiftKey){pan(dx,dy)}else{goal.az+=dx*.006;goal.el=clamp(goal.el+dy*.005,.16,1.565)}}else if(pointers.size===2){let arr=[...pointers.values()],A=arr[0],B=arr[1],now={cx:(A.x+B.x)/2,cy:(A.y+B.y)/2,dist:Math.hypot(A.x-B.x,A.y-B.y)},prev={cx:(A.prevX+B.prevX)/2,cy:(A.prevY+B.prevY)/2,dist:Math.hypot(A.prevX-B.prevX,A.prevY-B.prevY)};pan(now.cx-prev.cx,now.cy-prev.cy);if(prev.dist>1){goal.dist=clamp(goal.dist*prev.dist/Math.max(now.dist,2),95,9000)}}});for(let ev of ['pointerup','pointercancel','lostpointercapture'])C.addEventListener(ev,e=>{pointers.delete(e.pointerId);lastPair=null});function pan(dx,dy){let s=goal.dist/(Math.min(cw,ch)*1.6);goal.tx+=cos(goal.az)*dx*s;goal.tz-=sin(goal.az)*dx*s;goal.tx-=sin(goal.az)*dy*s*1.0;goal.tz-=cos(goal.az)*dy*s*1.0;goal.tx=clamp(goal.tx,-4000,4000);goal.tz=clamp(goal.tz,-5300,2100)}C.addEventListener('wheel',e=>{e.preventDefault();stopOnboard();goal.dist=clamp(goal.dist*Math.exp(e.deltaY*.0011),95,9000)},{passive:false});window.addEventListener('keydown',e=>{if(['+','-','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','0'].includes(e.key))stopOnboard();if(e.key==='+')goal.dist=clamp(goal.dist*.82,95,9000);if(e.key==='-')goal.dist=clamp(goal.dist*1.2,95,9000);if(e.key==='ArrowLeft')goal.az-=.14;if(e.key==='ArrowRight')goal.az+=.14;if(e.key==='ArrowUp')goal.el=clamp(goal.el-.12,.16,1.565);if(e.key==='ArrowDown')goal.el=clamp(goal.el+.12,.16,1.565);if(e.key==='0')applyPreset('overview')});
 const racingMeshes=raceCarModels.map(upload);
 function drawCars(t){
- gl.uniform1f(loc.uCarScale,drive.active?2:VEHICLE_SCALE);gl.uniform1f(loc.uCarGround,1.68);
+ gl.uniform1f(loc.uCarScale,drive.active?1:VEHICLE_SCALE);gl.uniform1f(loc.uCarGround,1.68);
  if(drive.active){const s=drive.pose;gl.uniform4f(loc.uCarPose,s.x,s.z,Math.cos(s.angle),Math.sin(s.angle));bindMesh(racingMeshes[0]);gl.uniform1f(loc.uCarScale,0);return;}
  for(let i=0;i<racingMeshes.length;i++){const [x,z,a]=CircuitLayout.atTime(t/1000+i*CircuitLayout.lapSeconds/racingMeshes.length);gl.uniform4f(loc.uCarPose,x,z,Math.cos(a),Math.sin(a));bindMesh(racingMeshes[i]);}
  gl.uniform1f(loc.uCarScale,0);

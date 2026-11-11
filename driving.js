@@ -40,7 +40,7 @@ function create(layout,options={}){
   state.speed=clamp(state.speed+(throttle*18-brake*44-drag)*STEP,0,100);
   const yaw=state.steer*Math.min(.95/(1+state.speed/35),18/Math.max(state.speed,1))*Math.min(1,state.speed/7);
   state.angle=wrap(state.angle+yaw*STEP);state.x+=Math.cos(state.angle)*state.speed*STEP;state.z+=Math.sin(state.angle)*state.speed*STEP;
-  const r=road(state.x,state.z),limit=Math.max(1,r.half-2.7);state.offroad=r.offset>r.half-4;
+  const r=road(state.x,state.z),limit=Math.max(1,r.half-1.35);state.offroad=r.offset>r.half-2.7;
   if(r.offset>limit){const nx=(state.x-r.x)/r.offset,nz=(state.z-r.z)/r.offset;state.x=r.x+nx*limit;state.z=r.z+nz*limit;if(state.hit<=0){state.speed*=.35;state.hit=.7;}invalidate();}
   state.wrongWay=state.speed>2&&Math.cos(state.angle-r.angle)<-.25;
   if(state.started)progress(r0.d,r.d);state.d=r.d;
@@ -48,6 +48,6 @@ function create(layout,options={}){
  function update(seconds,input={}){if(state.paused||!Number.isFinite(seconds))return;accumulator+=clamp(seconds,0,.25);while(accumulator+1e-10>=STEP){previous={x:state.x,z:state.z,angle:state.angle,speed:state.speed};step(input);accumulator-=STEP;}}
  return {state,update,recover,restart,pause,road,renderState,sectorEnds};
 }
-function chaseCamera(p){const forward=[Math.cos(p.angle),Math.sin(p.angle)];return {eye:[p.x-forward[0]*22,8.5,p.z-forward[1]*22],target:[p.x+forward[0]*12,3.8,p.z+forward[1]*12],fov:1.02+.16*clamp(p.speed/100,0,1)};}
+function chaseCamera(p){const forward=[Math.cos(p.angle),Math.sin(p.angle)];return {eye:[p.x-forward[0]*19,11,p.z-forward[1]*19],target:[p.x+forward[0]*9,3.3,p.z+forward[1]*9],fov:1.04};}
 const api={create,STEP,sectorColor,chaseCamera};if(typeof module==='object')module.exports=api;else root.CircuitDriving=api;
 })(typeof window==='object'?window:globalThis);
