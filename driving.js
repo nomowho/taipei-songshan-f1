@@ -41,7 +41,7 @@ function create(layout,options={}){
   const yaw=state.steer*Math.min(.95/(1+state.speed/35),18/Math.max(state.speed,1))*Math.min(1,state.speed/7);
   state.angle=wrap(state.angle+yaw*STEP);state.x+=Math.cos(state.angle)*state.speed*STEP;state.z+=Math.sin(state.angle)*state.speed*STEP;
   const r=road(state.x,state.z),limit=Math.max(1,r.half-1.35);state.offroad=r.offset>r.half-2.7;
-  if(r.offset>limit){const nx=(state.x-r.x)/r.offset,nz=(state.z-r.z)/r.offset;state.x=r.x+nx*limit;state.z=r.z+nz*limit;if(state.hit<=0){state.speed*=.35;state.hit=.7;}invalidate();}
+  if(r.offset>limit){const nx=(state.x-r.x)/r.offset,nz=(state.z-r.z)/r.offset;state.x=r.x+nx*limit;state.z=r.z+nz*limit;if(state.hit<=0){state.speed*=.35;state.hit=.7;}}
   state.wrongWay=state.speed>2&&Math.cos(state.angle-r.angle)<-.25;
   if(state.started)progress(r0.d,r.d);state.d=r.d;
  }
