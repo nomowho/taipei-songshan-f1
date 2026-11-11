@@ -1,3 +1,5 @@
+> 2026-11-11 BOARDS1：三張使用者原圖加入雙面賽道看板，涵蓋主直線後段與河岸回程；修正排位賽輸入名字時的背景繪圖負擔。詳見 [BILLBOARDS_RELEASE.md](BILLBOARDS_RELEASE.md)。
+
 > 2026-11-11 QUALIFYING1：「單人試駕」改為「排位賽」，開始前輸入車手名字。新增 Sites／D1 跨裝置共用前五名，同名只留最快有效單圈；保留護欄碰撞有效。詳見 [QUALIFYING_RELEASE.md](QUALIFYING_RELEASE.md)。
 
 > 2026-11-11 DRIVE2b：護欄碰撞改為只減速，不再取消圈速或分段成績；原本因救援、暫停、漏檢查點等原因無效的圈仍不計成績。
