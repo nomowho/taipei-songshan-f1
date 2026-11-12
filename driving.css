@@ -45,3 +45,7 @@
 }
 
 @media(max-width:700px) and (min-height:521px){#drivePanel.show-telemetry .qualifying-board,#drivePanel.show-telemetry .drive-sectors{top:calc(max(12px,env(safe-area-inset-top)) + 158px)}}
+
+.drive-desktop-tools{display:flex;position:absolute;bottom:150px;left:50%;transform:translateX(-50%);gap:8px}#drivePanel #driveAutoStart{border-color:#58dce8;color:#bdf7f7}#driveAutoStart[hidden]{display:none!important}
+@media(pointer:coarse),(max-width:700px){.drive-desktop-tools{display:none}}
+@media(pointer:fine) and (min-width:701px) and (max-height:520px){.drive-desktop-tools{bottom:102px}}
