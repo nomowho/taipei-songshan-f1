@@ -3,9 +3,9 @@
 const L=typeof module==='object'?require('./circuit.js'):root.CircuitLayout;
 const replaced=new Set([1,2,3]);
 const boards=[
- {id:'gvm-travel',src:'./assets/billboards/gvm-travel.png',x:1260,z:-145,w:96,ratio:1586/578},
+ {id:'green-commute',src:'./assets/billboards/green-commute.png',x:1260,z:-145,w:96,ratio:1672/941},
  {id:'taipei-speed',src:'./assets/billboards/taipei-speed.png',x:1100,z:-300,w:96,ratio:1672/941},
- {id:'green-commute',src:'./assets/billboards/green-commute.png',x:250,z:560,w:72,ratio:1672/941}
+ {id:'gvm-travel',src:'./assets/billboards/gvm-travel.png',x:250,z:560,w:72,ratio:1586/578}
 ].map(b=>{const index=L.nearest([b.x,b.z]),approach=L.locate((L.distances[index]-150)/L.length),dx=approach[0]-b.x,dz=approach[1]-b.z,d=Math.hypot(dx,dz);return {...b,y:8,h:b.w/b.ratio,n:[dx/d,dz/d],r:[-dz/d,dx/d],approach};});
 const point=(b,u,y,depth=0)=>[b.x+b.r[0]*u+b.n[0]*depth,y,b.z+b.r[1]*u+b.n[1]*depth];
 function faces(b){return [1,-1].map(side=>{const left=-side*b.w/2,right=side*b.w/2;return [point(b,left,b.y,side*.8),point(b,right,b.y,side*.8),point(b,right,b.y+b.h,side*.8),point(b,left,b.y+b.h,side*.8)];});}

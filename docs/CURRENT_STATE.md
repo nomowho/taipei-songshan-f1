@@ -1,3 +1,5 @@
+> 2026-11-12 MOBILE1：手機預設收合 TOP 5／分段明細，保留 S1～S3 色條；新增可切回手動的自動油門，按起跑才加速、煞車優先。遠見與綠色通勤看板互換位置。詳見 [MOBILE1_RELEASE.md](MOBILE1_RELEASE.md)。
+
 > 2026-11-11 BOARDS1：三張使用者原圖加入雙面賽道看板，涵蓋主直線後段與河岸回程；修正排位賽輸入名字時的背景繪圖負擔。詳見 [BILLBOARDS_RELEASE.md](BILLBOARDS_RELEASE.md)。
 
 > 2026-11-11 QUALIFYING1：「單人試駕」改為「排位賽」，開始前輸入車手名字。新增 Sites／D1 跨裝置共用前五名，同名只留最快有效單圈；保留護欄碰撞有效。詳見 [QUALIFYING_RELEASE.md](QUALIFYING_RELEASE.md)。
