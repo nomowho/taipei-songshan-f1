@@ -13,6 +13,7 @@ function barrierPlan(){if(barriers)return barriers;barriers=[];const P=L.track,N
  for(let i=0;i<N;i++)for(const side of [-1,1]){const a=pt(i,side),b=pt((i+1)%N,side),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(!barrierOpenings.has(i*2+(side===1?1:0)))barriers.push({points:[a,b],side,index:i,post:i%4===0});}return barriers;
 }
 function directionBoards(){return L.turns.map(turn=>{const approach=turn.distance,p=L.locate(approach/L.length),side=turn.direction==='right'?1:-1,offset=L.widthAt(p)/2+10;return {id:turn.id,direction:turn.direction,approach,x:p[0]-Math.sin(p[2])*side*offset,z:p[1]+Math.cos(p[2])*side*offset,angle:p[2]};});}
+function brakingBoards(){const major=new Set(['T1','T7','T10','T11','T16','T20']),boards=[];for(const turn of L.turns){if(!major.has(turn.id))continue;for(const metres of [150,100,50]){const approach=turn.distance-metres,p=L.locate(approach/L.length),side=turn.direction==='right'?1:-1,offset=L.widthAt(p)/2+11;boards.push({id:turn.id,metres,approach,x:p[0]-Math.sin(p[2])*side*offset,z:p[1]+Math.cos(p[2])*side*offset,angle:p[2]});}}return boards;}
 function build(base,objects,emissive){
  const P=L.track,N=P.length,normal=P.map((p,i)=>{const a=P[(i-1+N)%N],b=P[(i+1)%N],d=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/d,(b[0]-a[0])/d]});
  function point(i,offset,y){i=(i+N)%N;return[P[i][0]+normal[i][0]*offset,y,P[i][1]+normal[i][1]*offset]}
@@ -40,6 +41,15 @@ function build(base,objects,emissive){
   objects.quad(v(-s*1.55,4.45,.06),v(s*1.65,3.85,.06),v(s*1.65,3.45,.06),v(-s*1.55,4.05,.06),'#e4394b',0);
   objects.quad(v(-s*1.55,2.95,.06),v(s*1.65,3.55,.06),v(s*1.65,3.95,.06),v(-s*1.55,3.35,.06),'#e4394b',0);
  }
+ // Braking reference boards on the approach to the six largest speed reductions.
+ const digits={'0':['111','101','101','101','111'],'1':['010','110','010','010','111'],'5':['111','100','111','001','111']};
+ for(const board of brakingBoards()){const f=[Math.cos(board.angle),Math.sin(board.angle)],right=[f[1],-f[0]],v=(u,y,front=0)=>[board.x+right[0]*u-f[0]*front,y,board.z+right[1]*u-f[1]*front];
+  objects.quad(v(-1.8,2.35),v(1.8,2.35),v(1.8,4.55),v(-1.8,4.55),'#f7f4ea',0);
+  objects.quad(v(-1.8,4.3,.04),v(1.8,4.3,.04),v(1.8,4.55,.04),v(-1.8,4.55,.04),'#d92f42',0);
+  for(const u of [-1.55,1.55]){const p=v(u,1.9);objects.box(p[0],1.9,p[2],.2,.95,.2,'#8a989f',8);}
+  const label=String(board.metres),step=.25,start=-(label.length*4-1)*step/2;
+  for(let i=0;i<label.length;i++)for(let row=0;row<5;row++)for(let col=0;col<3;col++)if(digits[label[i]][row][col]==='1'){const a=start+(i*4+col)*step,y=2.75+(4-row)*step;objects.quad(v(a,y,.05),v(a+step*.85,y,.05),v(a+step*.85,y+step*.85,.05),v(a,y+step*.85,.05),'#121922',0);}
+ }
  // Outer boundaries of escape areas, with the track-facing side left open.
  function wall(a,b){const dx=b[0]-a[0],dz=b[1]-a[1],d=Math.hypot(dx,dz),nx=-dz/d*.6,nz=dx/d*.6;
   objects.quad([a[0],1,a[1]],[b[0],1,b[1]],[b[0],3,b[1]],[a[0],3,a[1]],'#bcc5c9',0);
@@ -59,5 +69,5 @@ function build(base,objects,emissive){
  objects.box(1050,0,-145,.7,7,.7,'#a4b5c1',8);emissive.box(1050,7,-145,2,1,1,'#80d9ed',12);
 
 }
-const api={build,runoffs,barrierPlan,directionBoards};if(typeof module==='object')module.exports=api;else root.CircuitScene=api;
+const api={build,runoffs,barrierPlan,directionBoards,brakingBoards};if(typeof module==='object')module.exports=api;else root.CircuitScene=api;
 })(typeof window==='object'?window:globalThis);
