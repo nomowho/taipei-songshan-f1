@@ -11,6 +11,7 @@
 /* Preserve the HUD while making every control reachable at mobile sizes. */
 button:focus-visible,#view:focus-visible{outline:2px solid #58dce8;outline-offset:3px}
 .mode-btn,.bar button{min-height:44px;min-width:44px}
+.bar button,.right button{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #error{z-index:100}#rendererStatus{position:absolute;top:205px;left:32px;color:#ffd3a0;font-size:11px;pointer-events:none}
 .compass{top:282px}.bottomnote{bottom:3px}
 @media(max-width:700px){
