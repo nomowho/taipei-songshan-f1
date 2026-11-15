@@ -85,6 +85,11 @@
 @media(pointer:coarse),(max-width:700px){#drivePanel .drive-map{display:none}.drive-touch{flex-direction:row}.drive-touch .drive-pedals{flex-direction:row-reverse}}
 #drivePanel #driveViewMode{display:none}
 #drivePanel #driveSteeringMode,#drivePanel #driveSteeringDesktop{border-color:#58dce85e;color:#c7eaf0}
+#qualifyingBoard{max-height:calc(100dvh - 170px);overflow-y:auto;scrollbar-width:thin;pointer-events:auto}
+@media(max-height:520px){#qualifyingBoard{max-height:calc(100dvh - 235px)}}
+.qualifying-history{border-top:1px solid #8ca4ba44;margin-top:8px;padding-top:8px}.qualifying-history h3{margin:0;color:#e7f3fc;font-size:11px;letter-spacing:.1em}.qualifying-history small{display:block;color:#aebfce;font-size:9px;margin-top:3px}
+#qualifyingHistoryRows{list-style:none;padding:0;margin:6px 0 0}#qualifyingHistoryRows li{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid #8ca4ba26;font-size:11px}#qualifyingHistoryRows li>span{color:#ff7987}#qualifyingHistoryRows b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}#qualifyingHistoryRows time{font-variant-numeric:tabular-nums;color:#a7eff0}#qualifyingHistoryRows .qualifying-empty{display:block;color:#aebfce;font-size:11px;line-height:1.6}
+@media(pointer:coarse),(max-width:700px){#qualifyingHistoryRows li{font-size:9px;grid-template-columns:13px minmax(0,1fr) auto;gap:3px;padding:5px 0}#qualifyingHistoryRows .qualifying-empty{font-size:9px}.qualifying-history h3{font-size:10px}.qualifying-history small{font-size:8px}}
 #drivePanel #driveSteeringMode[aria-pressed="true"],#drivePanel #driveSteeringDesktop[aria-pressed="true"]{background:#134458;color:#e6ffff}
 #drivePanel #driveFullscreen{display:none}
 @media(pointer:coarse) and (min-width:701px){#drivePanel #driveFullscreen:not([hidden]){display:block}}
