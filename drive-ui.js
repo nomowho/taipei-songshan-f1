@@ -19,6 +19,7 @@ function mount(game,hooks){
  $('qualifyingRetry').onclick=()=>CircuitQualifying.retryPending();
  setInterval(()=>{if(!document.hidden){CircuitQualifying.retryPending();if(active)refreshBoard();}},15000);
  $('qualifyingCancel').onclick=()=>entry.close();
+ const turnCueEl=document.createElement('div');turnCueEl.id='driveTurnCue';turnCueEl.className='drive-turn-cue';turnCueEl.hidden=true;turnCueEl.setAttribute('aria-label','下一彎方向提醒');turnCueEl.innerHTML='<span id="driveTurnArrow" aria-hidden="true"></span><span class="drive-turn-main"><b id="driveTurnId"></b><em id="driveTurnLabel"></em></span><strong id="driveTurnDistance"></strong>';panel.querySelector('.drive-status').after(turnCueEl);
  let joining=false;
  entry.addEventListener('cancel',e=>{if(joining)e.preventDefault();});
  $('qualifyingForm').onsubmit=async e=>{e.preventDefault();if(joining)return;let name;try{name=CircuitQualifying.driverName($('qualifyingName').value);}catch(error){$('qualifyingEntryError').textContent=error.message;return;}joining=true;$('qualifyingEnter').disabled=true;$('qualifyingCancel').disabled=true;$('qualifyingEntryError').textContent='正在連線共用排行榜…';try{let session;session=await CircuitQualifying.begin(name,(message,retry)=>{if(racer===session)status(message,retry);},entries=>{if(racer===session)board(entries);});racer=session;try{localStorage.setItem('taipei-qualifying-name',session.name);}catch{}$('qualifyingDriver').textContent=session.name;board(session.entries);status('跨裝置共用 · 每人最快單圈');entry.close();start();}catch(error){$('qualifyingEntryError').textContent=error.message||'無法連線，請稍後再試';}finally{joining=false;$('qualifyingEnter').disabled=false;$('qualifyingCancel').disabled=false;}};
@@ -47,6 +48,7 @@ function mount(game,hooks){
  panel.querySelector('[data-drive="throttle"]').onclick=()=>{if(autoThrottle)arm();};
  function refresh(){const s=game.state;
  if(s.completed>observedCompleted){observedCompleted=s.completed;if(racer&&s.lastLap!==null&&s.lastSectors.every(v=>v&&v.color!=='invalid')){lastFinish={lapMs:Math.round(s.lastLap*1000),lapNumber:s.lap-1};showFinish(lastFinish,boardEntries,false);$('finishCard').hidden=false;clear();game.pause(true);racer.submit({time:s.lastLap,sectors:s.lastSectors.map(v=>v.time),lapNumber:s.lap-1});}}
+ const cue=s.started&&!s.paused&&!s.wrongWay&&!lastFinish?CircuitDriveExperience.turnCue(CircuitLayout,s):null;turnCueEl.hidden=!cue;if(cue){turnCueEl.dataset.phase=cue.phase;$('driveTurnArrow').textContent=cue.arrow;$('driveTurnId').textContent=cue.id;$('driveTurnLabel').textContent=cue.label;$('driveTurnDistance').textContent=cue.distance?cue.distance+' m':'轉彎中';}
 
   const colors={purple:'紀錄最快',green:'本次最佳',yellow:'未改善',invalid:'無效'};
   for(let i=0;i<3;i++){const card=$('driveSector'+(i+1)),hold=s.time<3&&s.lastSectors[2],current=s.currentSectors[i],past=s.lastSectors[i],running=s.started&&s.sectorIndex===i&&!hold;

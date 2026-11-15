@@ -12,6 +12,7 @@ function barrierPlan(){if(barriers)return barriers;barriers=[];const P=L.track,N
  const pt=(i,s)=>[P[i][0]+normal[i][0]*s*(L.widthAt(P[i])/2+6),P[i][1]+normal[i][1]*s*(L.widthAt(P[i])/2+6)];
  for(let i=0;i<N;i++)for(const side of [-1,1]){const a=pt(i,side),b=pt((i+1)%N,side),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(!barrierOpenings.has(i*2+(side===1?1:0)))barriers.push({points:[a,b],side,index:i,post:i%4===0});}return barriers;
 }
+function directionBoards(){return L.turns.map(turn=>{const approach=turn.distance,p=L.locate(approach/L.length),side=turn.direction==='right'?1:-1,offset=L.widthAt(p)/2+10;return {id:turn.id,direction:turn.direction,approach,x:p[0]-Math.sin(p[2])*side*offset,z:p[1]+Math.cos(p[2])*side*offset,angle:p[2]};});}
 function build(base,objects,emissive){
  const P=L.track,N=P.length,normal=P.map((p,i)=>{const a=P[(i-1+N)%N],b=P[(i+1)%N],d=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/d,(b[0]-a[0])/d]});
  function point(i,offset,y){i=(i+N)%N;return[P[i][0]+normal[i][0]*offset,y,P[i][1]+normal[i][1]*offset]}
@@ -32,6 +33,13 @@ function build(base,objects,emissive){
   for(const y of [1.8,2.5])objects.quad(v(a,y),v(b,y),v(b,y+.35),v(a,y+.35),'#b2bdc0',8);
   for(const y of [3.3,4.5,5.7])objects.quad(v(a,y),v(b,y),v(b,y+.055),v(a,y+.055),'#7c939b',8);
   if(r.post){objects.box(a[0],1,a[1],.3,5,.3,'#a6b7be',8);objects.quad(v(a,2.9),v(b,5.7),v(b,5.77),v(a,2.97),'#6b838e',8);objects.quad(v(a,5.7),v(b,2.9),v(b,2.97),v(a,5.77),'#6b838e',8);}}
+ // Low-poly chevrons face oncoming cars, beyond the catch fence and outside the racing surface.
+ for(const board of directionBoards()){const f=[Math.cos(board.angle),Math.sin(board.angle)],right=[f[1],-f[0]],v=(u,y,front=0)=>[board.x+right[0]*u-f[0]*front,y,board.z+right[1]*u-f[1]*front],s=board.direction==='right'?1:-1;
+  objects.quad(v(-3,2.3),v(3,2.3),v(3,5.1),v(-3,5.1),'#edf0ec',0);
+  for(const u of [-2.6,2.6]){const p=v(u,1.6);objects.box(p[0],1.6,p[2],.22,.7,.22,'#8a989f',8);}
+  objects.quad(v(-s*1.55,4.45,.06),v(s*1.65,3.85,.06),v(s*1.65,3.45,.06),v(-s*1.55,4.05,.06),'#e4394b',0);
+  objects.quad(v(-s*1.55,2.95,.06),v(s*1.65,3.55,.06),v(s*1.65,3.95,.06),v(-s*1.55,3.35,.06),'#e4394b',0);
+ }
  // Outer boundaries of escape areas, with the track-facing side left open.
  function wall(a,b){const dx=b[0]-a[0],dz=b[1]-a[1],d=Math.hypot(dx,dz),nx=-dz/d*.6,nz=dx/d*.6;
   objects.quad([a[0],1,a[1]],[b[0],1,b[1]],[b[0],3,b[1]],[a[0],3,a[1]],'#bcc5c9',0);
@@ -51,5 +59,5 @@ function build(base,objects,emissive){
  objects.box(1050,0,-145,.7,7,.7,'#a4b5c1',8);emissive.box(1050,7,-145,2,1,1,'#80d9ed',12);
 
 }
-const api={build,runoffs,barrierPlan};if(typeof module==='object')module.exports=api;else root.CircuitScene=api;
+const api={build,runoffs,barrierPlan,directionBoards};if(typeof module==='object')module.exports=api;else root.CircuitScene=api;
 })(typeof window==='object'?window:globalThis);

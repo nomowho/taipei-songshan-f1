@@ -26,6 +26,7 @@ turns.forEach(t=>{t.index=nearest(t.xy);t.distance=distances[t.index]});
 function search(values,d){let lo=0,hi=values.length-1;while(lo<hi){let m=(lo+hi)>>1;if(values[m]<=d)lo=m+1;else hi=m}return Math.max(0,lo-1)}
 function position(i,u){const a=track[i],b=track[(i+1)%track.length];return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,Math.atan2(b[1]-a[1],b[0]-a[0])]}
 function locate(t){const d=((t%1+1)%1)*length,i=search(distances,d);return position(i,(d-distances[i])/segments[i])}
+turns.forEach(t=>{const a=locate((t.distance-45)/length),b=locate(t.distance/length),c=locate((t.distance+45)/length);t.direction=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0])<0?'right':'left'});
 const speeds=track.map((b,i)=>{const a=track[(i-1+track.length)%track.length],c=track[(i+1)%track.length],ab=Math.hypot(b[0]-a[0],b[1]-a[1]),bc=Math.hypot(c[0]-b[0],c[1]-b[1]),ac=Math.hypot(c[0]-a[0],c[1]-a[1]);const curvature=2*Math.abs((b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]))/Math.max(ab*bc*ac,1e-12);return Math.min(330/3.6,Math.sqrt(22/Math.max(curvature,1e-8)))});
 // Illustrative speed profile only: no tyre/aero/energy/weather simulation.
 for(let k=0;k<4;k++){for(let i=0;i<track.length;i++){let j=(i+1)%track.length;speeds[j]=Math.min(speeds[j],Math.sqrt(speeds[i]**2+16*segments[i]))}for(let i=track.length-1;i>=0;i--){let j=(i+1)%track.length;speeds[i]=Math.min(speeds[i],Math.sqrt(speeds[j]**2+64*segments[i]))}}
