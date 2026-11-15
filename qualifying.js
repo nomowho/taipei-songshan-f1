@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const API='https://nomowho-taipei-qualifying.mighty-harp-8860.chatgpt.site/api/qualifying',BOARD='taipei-drive2b-v1',sessions=new Set();
+const API='https://nomowho-taipei-qualifying.mighty-harp-8860.chatgpt.site/api/qualifying',BOARD='taipei-handling-v2',sessions=new Set();
 function driverName(raw){const name=String(raw).normalize('NFKC').trim().replace(/\s+/gu,' ');if(!name||Array.from(name).length>20||/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u.test(raw))throw Error('車手名字請輸入 1～20 個字');return name;}
 async function request(path,data,token){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);try{const r=await fetch(API+path,{method:data?'POST':'GET',headers:{...(data?{'Content-Type':'application/json'}:{}),...(token?{Authorization:'Bearer '+token}:{})},body:data?JSON.stringify(data):undefined,signal:controller.signal,credentials:'omit',cache:'no-store'});const body=await r.json();if(!r.ok){const e=new Error(body.error||'排行榜暫時無法連線');e.status=r.status;throw e;}return body;}catch(e){if(e.name==='AbortError')throw Error('排行榜連線逾時，請重試');throw e;}finally{clearTimeout(timer);}}
 async function top(){return (await request('/top')).entries;}

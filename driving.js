@@ -8,12 +8,12 @@ function create(layout,options={}){
  function road(x,z){let best=null,dist=Infinity;for(const s of segments){const u=clamp(((x-s.a[0])*s.dx+(z-s.a[1])*s.dz)/(s.len*s.len),0,1),px=s.a[0]+u*s.dx,pz=s.a[1]+u*s.dz,ds=(x-px)**2+(z-pz)**2;if(ds<dist){dist=ds;best={x:px,z:pz,d:s.d+u*s.len,angle:Math.atan2(s.dz,s.dx)};}}return {...best,offset:Math.sqrt(dist),half:layout.widthAt([best.x,best.z])/2};}
  const sectorEnds=layout.splits?layout.splits.map(i=>layout.distances[i]).concat(layout.length):[layout.length/3,layout.length*2/3,layout.length];
  const reference=Array.from({length:3},(_,i)=>{const v=options.referenceSectors?.[i];return Number.isFinite(v)&&v>0&&v<3600?v:null;});
- const start=layout.locate(0),state={x:start[0],z:start[1],angle:start[2],speed:0,steer:0,time:0,lastLap:null,bestLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,offroad:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],personalSectors:[null,null,null],recordSectors:reference,sectorIndex:0,sectorStart:0};let accumulator=0,previous={x:state.x,z:state.z,angle:state.angle,speed:0};
+ const start=layout.locate(0),state={x:start[0],z:start[1],angle:start[2],speed:0,steer:0,throttle:0,time:0,lastLap:null,bestLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,offroad:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],personalSectors:[null,null,null],recordSectors:reference,sectorIndex:0,sectorStart:0};let accumulator=0,previous={x:state.x,z:state.z,angle:state.angle,speed:0};
  function snap(){previous={x:state.x,z:state.z,angle:state.angle,speed:state.speed};accumulator=0;}
  function renderState(){const a=clamp(accumulator/STEP,0,1);return {x:previous.x+(state.x-previous.x)*a,z:previous.z+(state.z-previous.z)*a,angle:previous.angle+wrap(state.angle-previous.angle)*a,speed:previous.speed+(state.speed-previous.speed)*a};}
  function invalidate(){state.valid=false;for(const s of state.currentSectors)if(s)s.color='invalid';}
- function restart(){Object.assign(state,{x:start[0],z:start[1],angle:start[2],speed:0,steer:0,time:0,lastLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,offroad:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],sectorIndex:0,sectorStart:0});snap();}
- function recover(){const r=road(state.x,state.z);Object.assign(state,{x:r.x,z:r.z,angle:r.angle,speed:0,steer:0,d:r.d,valid:false,hit:0,wrongWay:false,offroad:false});invalidate();snap();}
+ function restart(){Object.assign(state,{x:start[0],z:start[1],angle:start[2],speed:0,steer:0,throttle:0,time:0,lastLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,offroad:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],sectorIndex:0,sectorStart:0});snap();}
+ function recover(){const r=road(state.x,state.z);Object.assign(state,{x:r.x,z:r.z,angle:r.angle,speed:0,steer:0,throttle:0,d:r.d,valid:false,hit:0,wrongWay:false,offroad:false});invalidate();snap();}
  function pause(value=true){state.paused=value;snap();if(value&&state.started)invalidate();}
  function progress(before,after){let delta=after-before;if(delta<-layout.length/2)delta+=layout.length;if(delta>layout.length/2)delta-=layout.length;if(Math.abs(delta)>10){invalidate();return;}if(delta<=0)return;
   const end=before+delta;
@@ -35,9 +35,10 @@ function create(layout,options={}){
  }
  function step(input){if(state.paused)return;const throttle=clamp(Number(input.throttle)||0,0,1),brake=clamp(Number(input.brake)||0,0,1),steer=clamp(Number(input.steer)||0,-1,1);
   if(throttle&&!state.started)state.started=true;if(state.started)state.time+=STEP;
-  state.hit=Math.max(0,state.hit-STEP);state.steer+=(steer-state.steer)*Math.min(1,STEP*9);
+  state.hit=Math.max(0,state.hit-STEP);state.steer+=(steer-state.steer)*Math.min(1,STEP*(input.steeringMode==='stable'?5.5:9));
+  state.throttle=brake?0:throttle>state.throttle?Math.min(throttle,state.throttle+STEP*3.5):throttle;
   const r0=road(state.x,state.z),drag=.5+.0015*state.speed**2+(state.offroad?state.speed*.65:0);
-  state.speed=clamp(state.speed+(throttle*18-brake*44-drag)*STEP,0,100);
+  state.speed=clamp(state.speed+(state.throttle*18-brake*34-drag)*STEP,0,100);
   const yaw=state.steer*Math.min(.95/(1+state.speed/35),18/Math.max(state.speed,1))*Math.min(1,state.speed/7);
   state.angle=wrap(state.angle+yaw*STEP);state.x+=Math.cos(state.angle)*state.speed*STEP;state.z+=Math.sin(state.angle)*state.speed*STEP;
   const r=road(state.x,state.z),limit=Math.max(1,r.half-1.35);state.offroad=r.offset>r.half-2.7;
