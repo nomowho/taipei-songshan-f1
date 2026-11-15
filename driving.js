@@ -49,5 +49,6 @@ function create(layout,options={}){
  return {state,update,recover,restart,pause,road,renderState,sectorEnds};
 }
 function chaseCamera(p){const forward=[Math.cos(p.angle),Math.sin(p.angle)];return {eye:[p.x-forward[0]*19,11,p.z-forward[1]*19],target:[p.x+forward[0]*9,3.3,p.z+forward[1]*9],fov:1.04};}
-const api={create,STEP,sectorColor,chaseCamera};if(typeof module==='object')module.exports=api;else root.CircuitDriving=api;
+function firstPersonCamera(p){const forward=[Math.cos(p.angle),Math.sin(p.angle)];return {eye:[p.x-forward[0]*.35,3.45,p.z-forward[1]*.35],target:[p.x+forward[0]*18,3.1,p.z+forward[1]*18],fov:1.08};}
+const api={create,STEP,sectorColor,chaseCamera,firstPersonCamera};if(typeof module==='object')module.exports=api;else root.CircuitDriving=api;
 })(typeof window==='object'?window:globalThis);
