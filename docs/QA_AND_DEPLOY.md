@@ -12,6 +12,8 @@ Desktop Chrome/Edge/Safari (as available):
 - [ ] Public landing page identifies this as an unofficial concept, not a scheduled real Formula 1 event.
 
 Mobile iOS Safari / Android Chrome (as available):
+- [ ] iPad Safari 排位賽「全螢幕」按鈕可進出；回到參觀會退出；橫式增高後上方操作列仍在右上角。
+- [ ] Safari 分享 → 加入主畫面 → 開啟「以網頁 App 開啟」；從主畫面圖示啟動時沒有 Safari 網址與分頁列，安全區域及觸控控制可用。
 - [ ] Single-finger orbit, two-finger pan, pinch zoom; 3D gestures do not accidentally change page zoom.
 - [ ] Buttons are tappable and not hidden behind safe areas, labels or overlay panels.
 - [ ] Orientation / resizing / refresh do not break rendering; acceptable frame rate and memory.

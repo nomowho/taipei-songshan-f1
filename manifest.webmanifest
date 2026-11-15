@@ -1,0 +1,14 @@
+{
+  "name": "TAIPEI GRAND PRIX — 松山機場概念賽道",
+  "short_name": "TAIPEI GP",
+  "description": "台北松山機場互動式 3D 概念賽道與排位賽；非官方概念設計。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07101b",
+  "theme_color": "#07101b",
+  "icons": [
+    {"src": "./assets/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "./assets/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
