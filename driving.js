@@ -2,14 +2,15 @@
 (function(root){
 'use strict';
 const STEP=1/60,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-function sectorColor(value,personal,record){return record===null||value<record-.0005?'purple':personal===null||value<personal-.0005?'green':'yellow';}
+function sectorColor(value,personal,global){return global===null||Number.isFinite(global)&&value<global-.0005?'purple':personal===null||value<personal-.0005?'green':'yellow';}
 function create(layout,options={}){
  const segments=layout.track.map((a,i)=>{const b=layout.track[(i+1)%layout.track.length],dx=b[0]-a[0],dz=b[1]-a[1];return {a,dx,dz,len:Math.hypot(dx,dz),d:layout.distances[i]};});
  function road(x,z){let best=null,dist=Infinity;for(const s of segments){const u=clamp(((x-s.a[0])*s.dx+(z-s.a[1])*s.dz)/(s.len*s.len),0,1),px=s.a[0]+u*s.dx,pz=s.a[1]+u*s.dz,ds=(x-px)**2+(z-pz)**2;if(ds<dist){dist=ds;best={x:px,z:pz,d:s.d+u*s.len,angle:Math.atan2(s.dz,s.dx)};}}return {...best,offset:Math.sqrt(dist),half:layout.widthAt([best.x,best.z])/2};}
  const sectorEnds=layout.splits?layout.splits.map(i=>layout.distances[i]).concat(layout.length):[layout.length/3,layout.length*2/3,layout.length];
  const reference=Array.from({length:3},(_,i)=>{const v=options.referenceSectors?.[i];return Number.isFinite(v)&&v>0&&v<3600?v:null;});
- const start=layout.locate(0),state={x:start[0],z:start[1],angle:start[2],speed:0,steer:0,throttle:0,time:0,lastLap:null,bestLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,offroad:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],personalSectors:[null,null,null],recordSectors:reference,sectorIndex:0,sectorStart:0};let accumulator=0,previous={x:state.x,z:state.z,angle:state.angle,speed:0};
+ const start=layout.locate(0),state={x:start[0],z:start[1],angle:start[2],speed:0,steer:0,throttle:0,time:0,lastLap:null,bestLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],personalSectors:[null,null,null],recordSectors:reference,globalSectors:[undefined,undefined,undefined],sectorIndex:0,sectorStart:0};let accumulator=0,previous={x:state.x,z:state.z,angle:state.angle,speed:0};
  function snap(){previous={x:state.x,z:state.z,angle:state.angle,speed:state.speed};accumulator=0;}
+ function setGlobalRecords(records){state.globalSectors=Array.from({length:3},(_,i)=>{const v=records?.[i];return v===null?null:Number.isFinite(v)&&v>0&&v<3600?v:undefined;});}
  function renderState(){const a=clamp(accumulator/STEP,0,1);return {x:previous.x+(state.x-previous.x)*a,z:previous.z+(state.z-previous.z)*a,angle:previous.angle+wrap(state.angle-previous.angle)*a,speed:previous.speed+(state.speed-previous.speed)*a};}
  function invalidate(){state.valid=false;for(const s of state.currentSectors)if(s)s.color='invalid';}
  function restart(){Object.assign(state,{x:start[0],z:start[1],angle:start[2],speed:0,steer:0,throttle:0,time:0,lastLap:null,lap:1,completed:0,nextGate:1,valid:true,started:false,paused:false,offroad:false,wrongWay:false,hit:0,d:0,currentSectors:[null,null,null],lastSectors:[null,null,null],sectorIndex:0,sectorStart:0});snap();}
@@ -22,7 +23,7 @@ function create(layout,options={}){
   if(before<boundary&&end>=boundary){
    const crossing=state.time-STEP+STEP*(boundary-before)/delta,elapsed=crossing-state.sectorStart,i=state.sectorIndex;
    const valid=state.valid&&state.nextGate>Math.floor(boundary/layout.length*24)&&elapsed>0;
-   state.currentSectors[i]={time:elapsed,color:valid?sectorColor(elapsed,state.personalSectors[i],state.recordSectors[i]):'invalid'};
+   state.currentSectors[i]={time:elapsed,color:valid?sectorColor(elapsed,state.recordSectors[i],state.globalSectors[i]):'invalid'};
    state.sectorStart=crossing;state.sectorIndex++;
   }
   if(end>=layout.length){
@@ -47,7 +48,7 @@ function create(layout,options={}){
   if(state.started)progress(r0.d,r.d);state.d=r.d;
  }
  function update(seconds,input={}){if(state.paused||!Number.isFinite(seconds))return;accumulator+=clamp(seconds,0,.25);while(accumulator+1e-10>=STEP){previous={x:state.x,z:state.z,angle:state.angle,speed:state.speed};step(input);accumulator-=STEP;}}
- return {state,update,recover,restart,pause,road,renderState,sectorEnds};
+ return {state,update,recover,restart,pause,road,renderState,sectorEnds,setGlobalRecords};
 }
 function chaseCamera(p){const forward=[Math.cos(p.angle),Math.sin(p.angle)];return {eye:[p.x-forward[0]*19,11,p.z-forward[1]*19],target:[p.x+forward[0]*9,3.3,p.z+forward[1]*9],fov:1.04};}
 function firstPersonCamera(p){const forward=[Math.cos(p.angle),Math.sin(p.angle)];return {eye:[p.x-forward[0]*.35,3.45,p.z-forward[1]*.35],target:[p.x+forward[0]*18,3.1,p.z+forward[1]*18],fov:1.08};}
