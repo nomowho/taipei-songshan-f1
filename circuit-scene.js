@@ -12,7 +12,7 @@ function barrierPlan(){if(barriers)return barriers;barriers=[];const P=L.track,N
  const pt=(i,s)=>[P[i][0]+normal[i][0]*s*(L.widthAt(P[i])/2+6),P[i][1]+normal[i][1]*s*(L.widthAt(P[i])/2+6)];
  for(let i=0;i<N;i++)for(const side of [-1,1]){const a=pt(i,side),b=pt((i+1)%N,side),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(!barrierOpenings.has(i*2+(side===1?1:0)))barriers.push({points:[a,b],side,index:i,post:i%4===0});}return barriers;
 }
-function directionBoards(){return L.turns.flatMap(turn=>[90,0].map(before=>{const approach=turn.distance-before,p=L.locate(approach/L.length),side=turn.id==='T1'&&before?-1:turn.direction==='right'?1:-1,offset=L.widthAt(p)/2+11.5;return {id:turn.id,phase:before?'approach':'apex',direction:turn.direction,approach,x:p[0]-Math.sin(p[2])*side*offset,z:p[1]+Math.cos(p[2])*side*offset,angle:p[2],width:9.5,bottom:6.1};}));}
+function directionBoards(){return L.turns.flatMap((turn,i)=>{const previous=i?L.turns[i-1].distance:L.turns.at(-1).distance-L.length,gap=turn.distance-previous,lead=Math.min(170,Math.max(90,gap*.62));return [lead,0].map(before=>{const approach=turn.distance-before,p=L.locate(approach/L.length),side=turn.id==='T1'&&before?-1:turn.direction==='right'?1:-1,offset=L.widthAt(p)/2+14.5;return {id:turn.id,phase:before?'approach':'apex',direction:turn.direction,approach,x:p[0]-Math.sin(p[2])*side*offset,z:p[1]+Math.cos(p[2])*side*offset,angle:p[2],width:13.5,bottom:6.2};});});}
 function brakingBoards(){const major=new Set(['T1','T7','T10','T11','T16','T20']),boards=[];for(const turn of L.turns){if(!major.has(turn.id))continue;for(const metres of [150,100,50]){const approach=turn.distance-metres,p=L.locate(approach/L.length),side=turn.direction==='right'?1:-1,offset=L.widthAt(p)/2+11;boards.push({id:turn.id,metres,approach,x:p[0]-Math.sin(p[2])*side*offset,z:p[1]+Math.cos(p[2])*side*offset,angle:p[2]});}}return boards;}
 function build(base,objects,emissive){
  const P=L.track,N=P.length,normal=P.map((p,i)=>{const a=P[(i-1+N)%N],b=P[(i+1)%N],d=Math.hypot(b[0]-a[0],b[1]-a[1]);return[-(b[1]-a[1])/d,(b[0]-a[0])/d]});
@@ -36,11 +36,16 @@ function build(base,objects,emissive){
   if(r.post){objects.box(a[0],1,a[1],.3,5,.3,'#a6b7be',8);objects.quad(v(a,2.9),v(b,5.7),v(b,5.77),v(a,2.97),'#6b838e',8);objects.quad(v(a,5.7),v(b,2.9),v(b,2.97),v(a,5.77),'#6b838e',8);}}
  // Elevated chevrons face oncoming cars both before and at each turn, clear of the catch fence.
  for(const board of directionBoards()){const f=[Math.cos(board.angle),Math.sin(board.angle)],right=[f[1],-f[0]],v=(u,y,front=0)=>[board.x+right[0]*u-f[0]*front,y,board.z+right[1]*u-f[1]*front],s=board.direction==='right'?1:-1,w=board.width/2,b=board.bottom;
-  objects.quad(v(-w,b),v(w,b),v(w,b+4),v(-w,b+4),'#edf0ec',0);
-  objects.quad(v(-w,b+3.65,.05),v(w,b+3.65,.05),v(w,b+4,.05),v(-w,b+4,.05),'#202d39',0);
+  objects.quad(v(-w,b),v(w,b),v(w,b+5.2),v(-w,b+5.2),'#edf0ec',0);
+  objects.quad(v(-w+.2,b+.2,.03),v(w-.2,b+.2,.03),v(w-.2,b+5,.03),v(-w+.2,b+5,.03),'#091723',0);
+  objects.quad(v(-w+.25,b+4.86,.08),v(w-.25,b+4.86,.08),v(w-.25,b+5,.08),v(-w+.25,b+5,.08),'#ff465d',12);
+  objects.quad(v(-w+.25,b+.22,.08),v(w-.25,b+.22,.08),v(w-.25,b+.36,.08),v(-w+.25,b+.36,.08),'#68e8f4',12);
+  for(const edge of [-w+.28,w-.43])objects.quad(v(edge,b+.36,.08),v(edge+.15,b+.36,.08),v(edge+.15,b+4.86,.08),v(edge,b+4.86,.08),'#68e8f4',12);
   for(const u of [-w+.55,w-.55]){const p=v(u,1.65);objects.box(p[0],1.65,p[2],.28,b-1.65,.28,'#8a989f',8);}
-  objects.quad(v(-s*3.25,b+3.2,.06),v(s*3.35,b+2.2,.06),v(s*3.35,b+1.62,.06),v(-s*3.25,b+2.62,.06),'#e4394b',0);
-  objects.quad(v(-s*3.25,b+.6,.06),v(s*3.35,b+1.6,.06),v(s*3.35,b+2.18,.06),v(-s*3.25,b+1.18,.06),'#e4394b',0);
+  for(const center of [-3.1,3.1]){
+   objects.quad(v(center-s*2.1,b+4.15,.12),v(center+s*2.1,b+2.9,.12),v(center+s*2.1,b+2.15,.12),v(center-s*2.1,b+3.4,.12),'#f3f8fc',12);
+   objects.quad(v(center-s*2.1,b+1.05,.12),v(center+s*2.1,b+2.3,.12),v(center+s*2.1,b+3.05,.12),v(center-s*2.1,b+1.8,.12),'#f3f8fc',12);
+  }
  }
  // Braking reference boards on the approach to the six largest speed reductions.
  const digits={'0':['111','101','101','101','111'],'1':['010','110','010','010','111'],'5':['111','100','111','001','111']};
