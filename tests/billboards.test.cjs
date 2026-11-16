@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const B=require('../circuit-billboards.js'),L=require('../circuit.js');
-test('three original images keep their PNG aspect ratio and remain outside the racing surface',()=>{
- assert.equal(B.boards.length,3);
+test('two remaining original images keep their PNG aspect ratio and remain outside the racing surface',()=>{
+ assert.deepEqual(B.boards.map(b=>b.id),['green-commute','taipei-speed']);
  for(const b of B.boards){
   const png=fs.readFileSync(path.join(__dirname,'..',b.src));
   assert.equal(b.ratio,png.readUInt32BE(16)/png.readUInt32BE(20));
