@@ -16,3 +16,9 @@ test('detailed racing model keeps all four exposed wheels grounded after transla
  assert.ok(Math.abs(bottom-2.4)<1e-8);assert.ok(top>6.5);assert.ok(model.arr.length/12>1000,'model includes detailed exposed tires and wings');
  for(const x of [-1.86,1.78])for(const z of [-1.08,1.08]){let near=[];for(let i=0;i<model.arr.length;i+=12)if(Math.abs(model.arr[i]-x)<.01&&Math.abs(model.arr[i+2]-z)<.3)near.push(model.arr[i+1]);assert.ok(near.some(y=>Math.abs(y)<1e-8),'each wheel has a ground-contact vertex');}
 });
+test('seven selectable liveries use the same detailed open-wheel car shape',()=>{
+ assert.deepEqual(design.driverColors.map(c=>c.label),['紅','黑','白','橘','藍','綠','粉紅']);
+ assert.equal(new Set(design.driverColors.map(c=>c.id)).size,7);
+ const shapes=design.driverColors.map(c=>{const a=design.createRaceCar(env.createMesh,c).arr,body=env.RGB(c.color);assert.ok(a.some((_,i)=>i%12===6&&Math.abs(a[i]-body[0])<1e-8&&Math.abs(a[i+1]-body[1])<1e-8&&Math.abs(a[i+2]-body[2])<1e-8));return a.length;});
+ assert.equal(new Set(shapes).size,1);
+});

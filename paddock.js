@@ -2,6 +2,15 @@
 (function(root){
 'use strict';
 const pi=Math.PI;
+const driverColors=[
+ {id:'red',label:'紅',color:'#d8243d',accent:'#f4e8df'},
+ {id:'black',label:'黑',color:'#27313d',accent:'#7ee4e8'},
+ {id:'white',label:'白',color:'#e9edf0',accent:'#d9233d'},
+ {id:'orange',label:'橘',color:'#ff8700',accent:'#15202b'},
+ {id:'blue',label:'藍',color:'#216bd5',accent:'#e7f3ff'},
+ {id:'green',label:'綠',color:'#13836d',accent:'#c9ee48'},
+ {id:'pink',label:'粉紅',color:'#e978b2',accent:'#342540'}
+];
 function roofPoint(u,v){const span=62+14*Math.sin(pi*u),x=-670+1220*u,z=-21+7*Math.sin(2*pi*u)+(v-.5)*span;return [x,29+12*Math.sin(pi*u)+7*Math.exp(-(((u-.8)/.15)**2))+8*(1-(2*v-1)**2),z]}
 function roofNormal(u,v){const a=roofPoint(u-.0001,v),b=roofPoint(u+.0001,v),c=roofPoint(u,v-.0001),d=roofPoint(u,v+.0001),du=b.map((n,i)=>n-a[i]),dv=d.map((n,i)=>n-c[i]);let n=[dv[1]*du[2]-dv[2]*du[1],dv[2]*du[0]-dv[0]*du[2],dv[0]*du[1]-dv[1]*du[0]],length=Math.hypot(...n);return n.map(x=>x/length)}
 // Inverse roof parameterization gives the same surface used by the shell mesh.
@@ -47,7 +56,19 @@ function createRaceCar(factory,team){
  }
  function tube(a,b,r,color){let dir=b.map((v,i)=>v-a[i]),len=Math.hypot(...dir);dir=dir.map(x=>x/len);let u=Math.abs(dir[1])<.9?[dir[2],0,-dir[0]]:[1,0,0];let l=Math.hypot(...u);u=u.map(x=>x/l);let v=[dir[1]*u[2]-dir[2]*u[1],dir[2]*u[0]-dir[0]*u[2],dir[0]*u[1]-dir[1]*u[0]];function p(t,k){let th=k/6*pi*2;return a.map((n,i)=>n+dir[i]*len*t+r*(u[i]*Math.cos(th)+v[i]*Math.sin(th)))}for(let i=0;i<6;i++)m.quad(p(0,i),p(1,i),p(1,i+1),p(0,i+1),color);}
  m.box(-.25,.14,0,4.8,.14,1.8,dark);wedge(-2.5,.7,1.1,.8,.85,.80,col);wedge(.6,3.03,.58,.22,.76,.42,col);
- for(const z of [-.66,.66]){m.box(-.5,.3,z,2.9,.40,.53,col);m.box(-.5,.73,z,2.2,.07,.33,accent);}
+ // Tapered raised nose and exposed black floor give the car a recognisable open-wheel silhouette.
+ wedge(.45,3.14,.58,.18,1.0,.47,col);
+ m.quad([.48,1.01,-.075],[2.96,.52,-.055],[2.96,.52,.055],[.48,1.01,.075],accent);
+ for(const side of [-1,1]){
+  const inner=side*.53,outer=side*1.02;
+  m.quad([-1.75,.66,outer],[.22,.77,outer],[.42,.54,inner],[-1.38,.67,inner],col);
+  m.quad([-1.75,.28,outer],[.22,.30,outer],[.22,.77,outer],[-1.75,.66,outer],col);
+  m.quad([.22,.30,outer],[.42,.32,inner],[.42,.54,inner],[.22,.77,outer],dark);
+  m.box(-.55,.27,side*.72,2.9,.10,.56,dark);
+  m.box(-.56,.76,side*.79,1.95,.06,.30,accent);
+ }
+ wedge(-2.12,-.72,.64,.52,1.02,1.35,col);
+ m.quad([-2.2,1.26,0],[-.96,1.54,0],[-.78,1.3,0],[-1.9,1.18,0],accent);
  m.box(-.45,.83,0,1.25,.10,.75,dark);wedge(-2.1,-.92,.72,.45,1.04,1.3,col);m.box(-1.2,1.18,0,.4,.25,.28,dark);
  m.cylinder(-.45,0,.17,.25,.95,'#f1cf53',12);
  for(let j=0;j<12;j++){const a=j/12*pi,b=(j+1)/12*pi;tube([-.25+.78*Math.cos(a),1.47,.41*Math.sin(a)],[-.25+.78*Math.cos(b),1.47,.41*Math.sin(b)],.055,dark);tube([-.25+.78*Math.cos(a),1.47,-.41*Math.sin(a)],[-.25+.78*Math.cos(b),1.47,-.41*Math.sin(b)],.055,dark)}
@@ -59,13 +80,14 @@ function createRaceCar(factory,team){
   tube([x,.45,z*.30],[x,.56,z],.045,dark);tube([x-.35,.48,z*.30],[x,.56,z],.045,dark);
  }
  // Separate front and rear multi-element wings and upright endplates.
- for(const dx of [2.82,3.12])m.box(dx,.24,0,.25,.12,2.72,dark);
+ for(const dx of [2.82,3.12,3.3])m.box(dx,.24,0,.18,.10,2.72,dark);
  m.box(2.97,.37,0,.48,.10,2.58,accent);
+ m.box(3.23,.18,0,.18,.07,2.62,accent);
  for(const z of [-1.36,1.36])m.box(2.97,.24,z,.63,.40,.10,col);
  m.box(-2.66,.34,0,.14,1.12,.20,dark);m.box(-2.70,1.28,0,.64,.16,2.55,col);m.box(-2.54,1.49,0,.25,.10,2.55,accent);
  for(const z of [-1.30,1.30])m.box(-2.7,1.13,z,.72,.55,.09,dark);
  return m;
 }
 function appendCar(target,source,x,z,angle,scale=3,ground=2.4){const c=Math.cos(angle),s=Math.sin(angle),a=source.arr;for(let i=0;i<a.length;i+=12)target.arr.push(x+(c*a[i]-s*a[i+2])*scale,ground+a[i+1]*scale,z+(s*a[i]+c*a[i+2])*scale,c*a[i+3]-s*a[i+5],a[i+4],s*a[i+3]+c*a[i+5],...a.slice(i+6,i+12));}
-const api={roofPoint,roofNormal,roofSurface,buildRoofStroke,buildRoof,buildScreens,createRaceCar,appendCar};if(typeof module==='object')module.exports=api;else root.CircuitPaddock=api;
+const api={roofPoint,roofNormal,roofSurface,buildRoofStroke,buildRoof,buildScreens,createRaceCar,appendCar,driverColors};if(typeof module==='object')module.exports=api;else root.CircuitPaddock=api;
 })(typeof window==='object'?window:this);
