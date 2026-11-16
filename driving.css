@@ -46,6 +46,9 @@
 }
 
 @media(max-width:700px) and (min-height:521px){#drivePanel.show-telemetry .qualifying-board,#drivePanel.show-telemetry .drive-sectors{top:calc(max(12px,env(safe-area-inset-top)) + 158px)}}
+.qualifying-board{max-height:calc(100dvh - 150px);overflow-y:auto;overscroll-behavior:contain}
+@media(max-height:520px){.qualifying-board{max-height:calc(100dvh - 125px)}}
+@media(max-width:700px) and (min-height:521px){.qualifying-board{max-height:calc(100dvh - 190px)}}
 
 .drive-desktop-tools{display:flex;position:absolute;bottom:150px;left:50%;transform:translateX(-50%);gap:8px}#drivePanel #driveAutoStart{border-color:#58dce8;color:#bdf7f7}#driveAutoStart[hidden]{display:none!important}
 @media(pointer:coarse),(max-width:700px){.drive-desktop-tools{display:none}}
