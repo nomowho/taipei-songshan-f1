@@ -86,6 +86,14 @@
 #drivePanel #drivePause{flex:0 0 44px;width:44px;height:44px;padding:0;font-size:20px;line-height:1;border-color:#66d7e5;color:#c5f8ff}
 #drivePanel #drivePause[aria-pressed="true"]{background:#145464;border-color:#8df3ff;color:#fff}
 #drivePanel #drivePause:disabled{opacity:.55;cursor:default}
+#drivePanel #driveSound{flex:0 0 44px;width:44px;height:44px;padding:0;font-size:22px;line-height:1;border-color:#66d7e5;color:#c5f8ff}
+#drivePanel #driveSound[aria-pressed="true"]{background:#145464;border-color:#8df3ff;color:#fff}
+#drivePanel #driveSound:disabled{opacity:.45;cursor:default}
+.qualifying-portrait-note{display:none;margin:0 0 14px;color:#b5eff3;font-size:12px;line-height:1.6}
+#orientationTip[hidden]{display:none!important}
+#orientationTip{position:absolute;z-index:5;top:35%;left:50%;transform:translateX(-50%);width:min(340px,calc(100vw - 28px));display:flex;align-items:center;gap:12px;padding:14px;background:#071523ed;border:1px solid #68deebad;border-top:3px solid #ff596a;box-shadow:0 12px 35px #000a;pointer-events:none}
+#orientationTip>span{font-size:29px;color:#65e4ef}#orientationTip strong,#orientationTip small{display:block}#orientationTip strong{font-size:16px}#orientationTip small{font-size:11px;line-height:1.5;color:#b9d4df;margin-top:3px}#drivePanel #orientationDismiss{flex:none;min-height:40px;padding:6px 8px;pointer-events:auto}
+@media(pointer:coarse) and (orientation:portrait){.qualifying-portrait-note{display:block}#drivePanel .drive-actions{flex-wrap:wrap}#drivePanel #driveSound{flex-basis:40px;width:40px;height:40px}}
 @media(max-width:380px) and (min-height:521px){#drivePanel .drive-joystick{width:110px;height:110px}#drivePanel .joystick-thumb{width:50px;height:50px;margin:-25px 0 0 -25px}#drivePanel .drive-touch .brake,#drivePanel.auto-throttle .drive-touch .brake,#drivePanel.auto-armed .drive-touch .brake{width:96px;height:96px;font-size:17px}#drivePanel .drive-touch .throttle,#drivePanel.auto-throttle .drive-touch .throttle{width:58px;height:58px;font-size:11px}}
 @media(max-height:520px){.drive-map{bottom:150px}#drivePanel .drive-joystick{width:104px;height:104px}#drivePanel .joystick-thumb{width:48px;height:48px;margin:-24px 0 0 -24px}#drivePanel .drive-touch .brake,#drivePanel.auto-throttle .drive-touch .brake,#drivePanel.auto-armed .drive-touch .brake{width:92px;height:92px;font-size:16px}#drivePanel .drive-touch .throttle,#drivePanel.auto-throttle .drive-touch .throttle{width:56px;height:56px;font-size:11px}}
 @media(pointer:coarse) and (min-height:521px),(max-width:700px) and (min-height:521px){#drivePanel .drive-dash{bottom:158px}#drivePanel .drive-map{bottom:251px}#drivePanel .drive-status{bottom:272px;left:auto;right:max(12px,env(safe-area-inset-right));transform:none;max-width:calc(100% - 184px)}}
